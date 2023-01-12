@@ -35,6 +35,7 @@ public class MyApplication{
     	return answer;
     }
 
+
     public static void main(String[] args) {
         SpringApplication.run(MyApplication.class,args);
     }
