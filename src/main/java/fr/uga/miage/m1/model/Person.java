@@ -1,5 +1,6 @@
-package fr.uga.miage.m1;
+package fr.uga.miage.m1.model;
 
+import fr.uga.miage.m1.PersonId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

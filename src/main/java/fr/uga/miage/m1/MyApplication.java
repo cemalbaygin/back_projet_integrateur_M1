@@ -1,5 +1,7 @@
 package fr.uga.miage.m1;
 
+import fr.uga.miage.m1.model.Person;
+import fr.uga.miage.m1.repository.PersonsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
