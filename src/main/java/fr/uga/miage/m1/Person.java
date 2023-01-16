@@ -5,17 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
+@Table
 @Getter
 @IdClass(PersonId.class)
-@NoArgsConstructor
-@AllArgsConstructor
-@Table
 public final class Person {
+
+	public Person() {
+	}
+
+	public Person(String firstName, String lastName) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+        this.adresse="Grenoble";
+	}
 	
     @Id
     @Column(name="first_name")
@@ -25,9 +30,9 @@ public final class Person {
     private String lastName;
 
     @Column(name="adressePostal")
-    private String adressePostal;
+    private String adresse;
 
-    @Column(name="password")
+    @Column(name= "password")
     private String password;
 
 }
