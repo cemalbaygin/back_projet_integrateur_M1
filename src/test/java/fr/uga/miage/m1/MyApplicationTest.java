@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MyApplicationTest {
 
 	@InjectMocks
-	MyApplication myApp;
+    MyApplication myApp;
 
 	@Mock
 	PersonsRepository repository;
