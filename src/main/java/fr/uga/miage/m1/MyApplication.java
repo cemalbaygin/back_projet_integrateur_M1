@@ -1,10 +1,12 @@
 package fr.uga.miage.m1;
 
+import fr.uga.miage.m1.command.SeederCommand;
 import fr.uga.miage.m1.model.Person;
 import fr.uga.miage.m1.repository.PersonsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +38,6 @@ public class MyApplication{
     	}
     	return answer;
     }
-
 
     public static void main(String[] args) {
         SpringApplication.run(MyApplication.class,args);
