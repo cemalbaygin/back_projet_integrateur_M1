@@ -9,13 +9,14 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.uga.miage.m1</groupId>
-	<artifactId>demo-server</artifactId>
+	<artifactId>ProjetIntegrateur</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo-server</name>
+	<name>projet_integrateur_back</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 		<sonar.host.url>http://im2ag-sonar.u-ga.fr:9000</sonar.host.url>
+		<sonar.login>${user.token}</sonar.login>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -78,6 +79,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.0.1</version>
 				<configuration>
 					<excludes>
 						<exclude>
@@ -85,6 +87,9 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<profiles>
+						<profile>dev</profile>
+					</profiles>
 				</configuration>
 			</plugin>
 			<plugin>
