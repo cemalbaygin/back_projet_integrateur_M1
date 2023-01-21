@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.uga.miage.m1</groupId>
-	<artifactId>ProjetIntegrateur</artifactId>
+	<artifactId>projet_integrateur_g9</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>projet_integrateur_back</name>
 	<description>Demo project for Spring Boot</description>
