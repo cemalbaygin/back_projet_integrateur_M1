@@ -44,14 +44,10 @@ public class SeederCommand implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Import start");
 
-        try {
-            //importMedicament();
-            //importGroupeMedicament();
+        //importMedicament();
+        //importGroupeMedicament();
 
-            importComposition();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //importComposition();
 
         logger.info("Import end");
     }
@@ -74,9 +70,10 @@ public class SeederCommand implements CommandLineRunner {
         BufferedReader reader = new BufferedReader(streamReader);
 
         String line;
-        int i = 0;
+        int counter = 0;
+
         while ((line = reader.readLine()) != null) {
-            i++;
+            counter++;
             String[] columns = line.split("\t");
 
             MedicamentEntity med = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis])).orElse(null);
@@ -84,8 +81,9 @@ public class SeederCommand implements CommandLineRunner {
 
             if (med == null) continue;
 
+            if (counter % 1000 == 0) logger.info((counter * 100 / 32000) + "%");
+
             if (columns[colNature].equals(naturePrincipeActif)) {
-                if (i % 1000 == 0) logger.info("1000");
                 GroupeMedicamentEntity groupeMedicament = med.getGroupeMedicament();
 
                 GroupeMedicamentPrincipeActifKey id = new GroupeMedicamentPrincipeActifKey(groupeMedicament.getId(), substanceId);
@@ -139,7 +137,11 @@ public class SeederCommand implements CommandLineRunner {
         BufferedReader reader = new BufferedReader(streamReader);
 
         String line;
+        int counter = 0;
         while ((line = reader.readLine()) != null) {
+            counter++;
+            if (counter % 1000 == 0) logger.info((counter * 100 / 15000) + "%");
+
             String[] columns = line.split("\t");
 
             String[] titulaires = columns[colTitulaires].split(";");
@@ -190,14 +192,17 @@ public class SeederCommand implements CommandLineRunner {
                 new InputStreamReader(is, StandardCharsets.ISO_8859_1);
         BufferedReader reader = new BufferedReader(streamReader);
 
-
         int colIdGroupeMedicament = 0;
         int colLabelGroupeMedicament = 1;
         int colCodeCis = 2;
         int colTypeMedicament = 3;
 
         String line;
+        int counter = 0;
         while ((line = reader.readLine()) != null) {
+            counter++;
+            if (counter % 1000 == 0) logger.info((counter * 100 / 15000) + "%");
+
             String[] columns = line.split("\t");
             Long idGroupeMedicament = Long.parseLong(columns[colIdGroupeMedicament]);
 

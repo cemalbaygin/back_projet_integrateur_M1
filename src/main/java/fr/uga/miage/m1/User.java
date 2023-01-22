@@ -15,59 +15,58 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "user_t")
 public class User implements UserDetails {
 
-  @Id
-  @Column
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+    @Id
+    @Column
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    
+    private String firstname;
+    @Column
+    private String lastname;
+    @Column
+    private String email;
+    @Column
+    private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column
+    private Role role;
 
-  private String firstname;
-  @Column
-  private String lastname;
-  @Column
-  private String email;
-  @Column
-  private String password;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
 
-  @Enumerated(EnumType.STRING)
-  @Column
-  private Role role;
+    @Override
+    public String getPassword() {
+        return password;
+    }
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority(role.name()));
-  }
+    @Override
+    public String getUsername() {
+        return email;
+    }
 
-  @Override
-  public String getPassword() {
-    return password;
-  }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-  @Override
-  public String getUsername() {
-    return email;
-  }
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
