@@ -1,5 +1,6 @@
 package fr.uga.miage.m1.entity;
 
+import fr.uga.miage.m1.model.dto.MedicamentDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,5 +23,8 @@ public class GroupeMedicament {
 
     @OneToMany(mappedBy = "groupeMedicament")
     private List<GroupeMedicamentPrincipeActif> groupeMedicamentAssoc;
+
+    @OneToMany(mappedBy = "groupeMedicament")
+    private List<Medicament> medicaments;
 }
  

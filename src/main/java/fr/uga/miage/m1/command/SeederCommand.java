@@ -261,7 +261,7 @@ public class SeederCommand implements CommandLineRunner {
             for (String titulaire : titulaires) {
                 if (!fabricantsRepository.existsByLibelle(titulaire)) {
                     Fabricant fabricant = new Fabricant();
-                    fabricant.setLibelle(titulaire);
+                    fabricant.setLibelle(titulaire.trim());
                     fabricantsRepository.save(fabricant);
                 }
 
