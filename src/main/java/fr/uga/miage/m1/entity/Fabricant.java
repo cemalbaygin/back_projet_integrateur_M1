@@ -9,9 +9,9 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "groupe_medicament")
+@Table(name = "fabricant")
 @Setter
-public class GroupeMedicamentEntity {
+public class Fabricant {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -20,7 +20,6 @@ public class GroupeMedicamentEntity {
     @NonNull
     private String libelle;
 
-    @OneToMany(mappedBy = "groupeMedicament")
-    private List<GroupeMedicamentPrincipeActifEntity> groupeMedicamentAssoc;
+    @ManyToMany(mappedBy = "fabricants")
+    List<Medicament> medicaments;
 }
- 

@@ -7,11 +7,11 @@ import lombok.Setter;
 
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "excipient")
-public class ExcipientEntity {
+@Table(name = "principe_actif")
+public class PrincipeActif {
     @Id
     private Long id;
 
@@ -19,6 +19,6 @@ public class ExcipientEntity {
     @Column(length = 512)
     private String libelle;
 
-    @OneToMany(mappedBy = "excipient")
-    private List<MedicamentExcipientEntity> excipientAssos;
+    @OneToMany(mappedBy = "principeActif")
+    private List<GroupeMedicamentPrincipeActif> principeActifAssos;
 }

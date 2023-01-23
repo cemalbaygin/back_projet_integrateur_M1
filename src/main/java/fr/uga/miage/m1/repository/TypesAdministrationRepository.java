@@ -1,11 +1,12 @@
 package fr.uga.miage.m1.repository;
-import fr.uga.miage.m1.entity.FabricantEntity;
-import fr.uga.miage.m1.entity.TypeAdministrationEntity;
+
+import fr.uga.miage.m1.entity.TypeAdministration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TypesAdministrationRepository extends JpaRepository<TypeAdministrationEntity, Long> {
+public interface TypesAdministrationRepository extends JpaRepository<TypeAdministration, Long> {
     Boolean existsByLibelle(String libelle);
-    TypeAdministrationEntity getByLibelle(String libelle);
+
+    TypeAdministration getByLibelle(String libelle);
 }

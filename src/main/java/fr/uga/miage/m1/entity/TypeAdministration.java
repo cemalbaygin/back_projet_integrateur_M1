@@ -9,16 +9,17 @@ import java.util.List;
 
 @Entity
 @Getter
+@Table(name = "type_administration")
 @Setter
-@Table(name = "principe_actif")
-public class PrincipeActifEntity {
+public class TypeAdministration {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(length = 255)
     @NonNull
-    @Column(length = 512)
     private String libelle;
 
-    @OneToMany(mappedBy = "principeActif")
-    private List<GroupeMedicamentPrincipeActifEntity> principeActifAssos;
+    @ManyToMany(mappedBy = "typesAdministration")
+    List<Medicament> medicaments;
 }

@@ -5,21 +5,17 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.List;
-
-@Entity
 @Getter
-@Table(name="fabricant")
 @Setter
-public class FabricantEntity {
+@Entity
+@Table(name = "prescription")
+public class Prescription {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column( length = 512)
     @NonNull
+    @Column(length = 512)
     private String libelle;
 
-    @ManyToMany(mappedBy = "fabricants")
-    List<MedicamentEntity> medicaments;
 }

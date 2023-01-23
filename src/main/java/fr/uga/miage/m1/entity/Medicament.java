@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Table(name = "medicament")
 @Setter
-public class MedicamentEntity {
+public class Medicament {
     @Id
     @Column(name = "codecis")
     private Long codeCIS;
@@ -28,7 +28,7 @@ public class MedicamentEntity {
     @ManyToMany
     @NonNull
     @JoinTable(name = "MedicamentFabricants", joinColumns = @JoinColumn(name = "codeCIS"), inverseJoinColumns = @JoinColumn(name = "id"))
-    List<FabricantEntity> fabricants;
+    List<Fabricant> fabricants;
 
     @Column
     @NonNull
@@ -40,13 +40,17 @@ public class MedicamentEntity {
 
     // TODO attention not nullable plus tard
     @ManyToOne
-    private GroupeMedicamentEntity groupeMedicament;
+    private GroupeMedicament groupeMedicament;
 
     @ManyToMany
     @JoinTable(name = "MedicamentTypesAdministration", joinColumns = @JoinColumn(name = "codeCIS"), inverseJoinColumns = @JoinColumn(name = "id"))
-    private List<TypeAdministrationEntity> typesAdministration;
+    private List<TypeAdministration> typesAdministration;
 
     @OneToMany(mappedBy = "medicament")
-    private List<MedicamentExcipientEntity> medicamentAssos;
+    private List<MedicamentExcipient> medicamentAssos;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "MedicamentPrescription", joinColumns = @JoinColumn(name = "codeCIS"), inverseJoinColumns = @JoinColumn(name = "id"))
+    private List<Prescription> prescriptions;
 }
  

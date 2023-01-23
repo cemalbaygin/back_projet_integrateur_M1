@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+//@Component
 public class SeederCommand implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(SeederCommand.class);
 
@@ -39,6 +38,10 @@ public class SeederCommand implements CommandLineRunner {
     MedicamentsExcipientsRepository medicamentsExcipientsRepository;
     @Autowired
     ExcipientsRepository excipientsRepository;
+    @Autowired
+    PresentationsRepository presentationsRepository;
+    @Autowired
+    PrescriptionsRepository prescriptionsRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -49,7 +52,116 @@ public class SeederCommand implements CommandLineRunner {
 
         //importComposition();
 
+        //importPresentation();
+
+        //importPrescription();
+
         logger.info("Import end");
+    }
+
+    private void importPrescription() throws IOException {
+        logger.info("Import presentations");
+
+        InputStream is = SeederCommand.class.getClassLoader().getResourceAsStream("dataBrut/CIS_CPD_bdpm.txt");
+        InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.ISO_8859_1);
+        BufferedReader reader = new BufferedReader(streamReader);
+
+        String line;
+        int counter = 0;
+
+        int colCodeCis = 0;
+        int colPrescription = 1;
+
+        while ((line = reader.readLine()) != null) {
+            counter++;
+            if (counter % 1000 == 0) logger.info((counter * 100 / 25000) + "%");
+
+            String[] columns = line.split("\t");
+
+
+            Medicament med = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis])).orElse(null);
+            if (med == null) continue;
+
+            Prescription prescription;
+            if (!prescriptionsRepository.existsByLibelle(columns[colPrescription])) {
+                prescription = new Prescription();
+                prescription.setLibelle(columns[colPrescription]);
+                prescriptionsRepository.save(prescription);
+            } else {
+                prescription = prescriptionsRepository.getByLibelle(columns[colPrescription]);
+            }
+
+            if (!med.getPrescriptions().contains(prescription)) {
+                med.getPrescriptions().add(prescription);
+            }
+
+            prescriptionsRepository.save(prescription);
+            medicamentsRepository.save(med);
+        }
+
+    }
+
+    private void importPresentation() throws IOException {
+        logger.info("Import presentations");
+
+        InputStream is = SeederCommand.class.getClassLoader().getResourceAsStream("dataBrut/CIS_CIP_bdpm.txt");
+        InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.ISO_8859_1);
+        BufferedReader reader = new BufferedReader(streamReader);
+
+        String line;
+        int counter = 0;
+
+        int colCodeCis = 0;
+        int colLibelle = 2;
+        int colCodeCip13 = 6;
+        int colPrix = 9;
+        int colTauxRemboursement = 8;
+
+        while ((line = reader.readLine()) != null) {
+            counter++;
+            String[] columns = line.split("\t");
+
+            // if missing price
+            if (columns.length < 10 || columns[colPrix].isBlank()) continue;
+
+            Medicament med = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis])).orElse(null);
+            if (med == null) continue;
+            Long codeCip13 = Long.parseLong(columns[colCodeCip13]);
+
+            Presentation pres = presentationsRepository.findById(codeCip13).orElse(null);
+            if (pres != null) continue;
+
+            if (counter % 1000 == 0) logger.info((counter * 100 / 20000) + "%");
+
+            try {
+                String l = columns[colPrix].replace(',', '.');
+
+                int count = l.length() - l.replace(".", "").length();
+                while (count > 1) {
+                    l = l.replaceFirst(".", "");
+                    count = l.length() - l.replace(".", "").length();
+                }
+
+                Double prix = Double.valueOf(l);
+
+                String txs = columns[colTauxRemboursement].replace("%", "").trim();
+                Integer tx = Integer.valueOf(txs);
+
+                Presentation presentation = new Presentation();
+                presentation.setCodeCIP13(codeCip13);
+                presentation.setMedicament(med);
+                presentation.setPrix(prix);
+                presentation.setLibelle(columns[colLibelle]);
+                presentation.setTauxRemboursement(tx);
+
+                presentationsRepository.save(presentation);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                break;
+            }
+
+        }
+
     }
 
     private void importComposition() throws IOException {
@@ -76,7 +188,7 @@ public class SeederCommand implements CommandLineRunner {
             counter++;
             String[] columns = line.split("\t");
 
-            MedicamentEntity med = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis])).orElse(null);
+            Medicament med = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis])).orElse(null);
             Long substanceId = Long.parseLong(columns[colCodeSubstance]);
 
             if (med == null) continue;
@@ -84,16 +196,16 @@ public class SeederCommand implements CommandLineRunner {
             if (counter % 1000 == 0) logger.info((counter * 100 / 32000) + "%");
 
             if (columns[colNature].equals(naturePrincipeActif)) {
-                GroupeMedicamentEntity groupeMedicament = med.getGroupeMedicament();
+                GroupeMedicament groupeMedicament = med.getGroupeMedicament();
 
                 GroupeMedicamentPrincipeActifKey id = new GroupeMedicamentPrincipeActifKey(groupeMedicament.getId(), substanceId);
                 if (!groupeMedicamentsPrincipeActifRepository.existsById(id)) {
-                    PrincipeActifEntity principeActif = new PrincipeActifEntity();
+                    PrincipeActif principeActif = new PrincipeActif();
                     principeActif.setId(Long.valueOf(columns[colCodeSubstance]));
                     principeActif.setLibelle(columns[colLibelleSubstance]);
                     principesActifsRepository.save(principeActif);
 
-                    GroupeMedicamentPrincipeActifEntity asso = new GroupeMedicamentPrincipeActifEntity();
+                    GroupeMedicamentPrincipeActif asso = new GroupeMedicamentPrincipeActif();
                     asso.setId(id);
                     asso.setDosage(columns[colDosageSubstance]);
                     groupeMedicamentsPrincipeActifRepository.save(asso);
@@ -102,12 +214,12 @@ public class SeederCommand implements CommandLineRunner {
                 MedicamentExcipientKey id = new MedicamentExcipientKey(med.getCodeCIS(), substanceId);
 
                 if (!medicamentsExcipientsRepository.existsById(id)) {
-                    ExcipientEntity excipient = new ExcipientEntity();
+                    Excipient excipient = new Excipient();
                     excipient.setId(Long.valueOf(columns[colCodeSubstance]));
                     excipient.setLibelle(columns[colLibelleSubstance]);
                     excipientsRepository.save(excipient);
 
-                    MedicamentExcipientEntity asso = new MedicamentExcipientEntity();
+                    MedicamentExcipient asso = new MedicamentExcipient();
                     asso.setId(id);
                     asso.setDosage(columns[colDosageSubstance]);
                     medicamentsExcipientsRepository.save(asso);
@@ -145,22 +257,22 @@ public class SeederCommand implements CommandLineRunner {
             String[] columns = line.split("\t");
 
             String[] titulaires = columns[colTitulaires].split(";");
-            List<FabricantEntity> fabricants = new ArrayList<>();
+            List<Fabricant> fabricants = new ArrayList<>();
             for (String titulaire : titulaires) {
                 if (!fabricantsRepository.existsByLibelle(titulaire)) {
-                    FabricantEntity fabricantEntity = new FabricantEntity();
-                    fabricantEntity.setLibelle(titulaire);
-                    fabricantsRepository.save(fabricantEntity);
+                    Fabricant fabricant = new Fabricant();
+                    fabricant.setLibelle(titulaire);
+                    fabricantsRepository.save(fabricant);
                 }
 
                 fabricants.add(fabricantsRepository.getByLibelle(titulaire));
             }
             String[] voiesAdministration = columns[colVoiesAdmin].split(";");
 
-            List<TypeAdministrationEntity> voies = new ArrayList<>();
+            List<TypeAdministration> voies = new ArrayList<>();
             for (String voieAdministration : voiesAdministration) {
                 if (!typesAdministrationRepository.existsByLibelle(voieAdministration)) {
-                    TypeAdministrationEntity typeAdministration = new TypeAdministrationEntity();
+                    TypeAdministration typeAdministration = new TypeAdministration();
                     typeAdministration.setLibelle(voieAdministration);
                     typesAdministrationRepository.save(typeAdministration);
                 }
@@ -170,7 +282,7 @@ public class SeederCommand implements CommandLineRunner {
 
 
             if (!medicamentsRepository.existsById(Long.parseLong(columns[colCodeCis]))) {
-                MedicamentEntity medicament = new MedicamentEntity();
+                Medicament medicament = new Medicament();
                 medicament.setCodeCIS(Long.parseLong(columns[colCodeCis]));
                 medicament.setLibelle(columns[colLibelle]);
                 medicament.setFormePharmaceutique(columns[colFormePharmaceutique]);
@@ -207,14 +319,14 @@ public class SeederCommand implements CommandLineRunner {
             Long idGroupeMedicament = Long.parseLong(columns[colIdGroupeMedicament]);
 
             if (!groupeMedicamentsRepository.existsById(idGroupeMedicament)) {
-                GroupeMedicamentEntity groupeMedicamentEntity = new GroupeMedicamentEntity();
-                groupeMedicamentEntity.setLibelle(columns[colLabelGroupeMedicament]);
-                groupeMedicamentsRepository.save(groupeMedicamentEntity);
+                GroupeMedicament groupeMedicament = new GroupeMedicament();
+                groupeMedicament.setLibelle(columns[colLabelGroupeMedicament]);
+                groupeMedicamentsRepository.save(groupeMedicament);
             }
 
-            Optional<MedicamentEntity> medicament = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis]));
+            Optional<Medicament> medicament = medicamentsRepository.findById(Long.parseLong(columns[colCodeCis]));
             if (medicament.isPresent()) {
-                MedicamentEntity med = medicament.get();
+                Medicament med = medicament.get();
                 med.setGroupeMedicament(groupeMedicamentsRepository.findById(idGroupeMedicament).get());
                 med.setEstReference(columns[colTypeMedicament].equals("0"));
                 medicamentsRepository.save(med);
@@ -223,7 +335,7 @@ public class SeederCommand implements CommandLineRunner {
 
         medicamentsRepository.findByGroupeMedicamentIsNull().forEach((med) -> {
             med.setEstReference(true);
-            GroupeMedicamentEntity groupeMedicament = new GroupeMedicamentEntity();
+            GroupeMedicament groupeMedicament = new GroupeMedicament();
             groupeMedicament.setLibelle(med.getLibelle());
             med.setGroupeMedicament(groupeMedicament);
             groupeMedicamentsRepository.save(groupeMedicament);
