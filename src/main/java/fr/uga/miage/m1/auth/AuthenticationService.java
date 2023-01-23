@@ -1,8 +1,8 @@
 package fr.uga.miage.m1.auth;
 
-import fr.uga.miage.m1.Role;
-import fr.uga.miage.m1.User;
-import fr.uga.miage.m1.UserRepository;
+import fr.uga.miage.m1.constants.Role;
+import fr.uga.miage.m1.entity.Utilisateur;
+import fr.uga.miage.m1.repository.UserRepository;
 import fr.uga.miage.m1.config.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -23,10 +23,10 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         System.out.println("request" + request.toString());
 
-        User u = userRepository.findByEmail(request.getEmail()).orElse(null);
+        Utilisateur u = userRepository.findByEmail(request.getEmail()).orElse(null);
 
         if (u == null) {
-            u = User.builder()
+            u = Utilisateur.builder()
                     .firstname(request.getFirstname())
                     .lastname(request.getLastname())
                     .email(request.getEmail())

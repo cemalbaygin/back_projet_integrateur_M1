@@ -1,5 +1,6 @@
-package fr.uga.miage.m1;
+package fr.uga.miage.m1.entity;
 
+import fr.uga.miage.m1.constants.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,13 +17,14 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "user_t")
-public class User implements UserDetails {
+public class Utilisateur implements UserDetails {
 
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    
+
+    @Column
     private String firstname;
     @Column
     private String lastname;

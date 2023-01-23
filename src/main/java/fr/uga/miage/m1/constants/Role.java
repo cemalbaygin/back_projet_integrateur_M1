@@ -1,4 +1,4 @@
-package fr.uga.miage.m1;
+package fr.uga.miage.m1.constants;
 
 public enum Role {
 

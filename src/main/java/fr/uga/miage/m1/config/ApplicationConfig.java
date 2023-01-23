@@ -1,6 +1,6 @@
 package fr.uga.miage.m1.config;
 
-import fr.uga.miage.m1.UserRepository;
+import fr.uga.miage.m1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
