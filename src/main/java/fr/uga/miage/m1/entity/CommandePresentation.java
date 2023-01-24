@@ -2,12 +2,9 @@ package fr.uga.miage.m1.entity;
 
 import fr.uga.miage.m1.model.EtatCommande;
 import fr.uga.miage.m1.model.compositeKey.CommandePresentationKey;
-import fr.uga.miage.m1.model.compositeKey.GroupeMedicamentPrincipeActifKey;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "commande_presentation")
@@ -24,6 +21,7 @@ public class CommandePresentation {
     private Integer quantite;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private EtatCommande etat;
 
     @ManyToOne
