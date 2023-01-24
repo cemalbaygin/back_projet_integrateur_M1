@@ -1,8 +1,8 @@
 package fr.uga.miage.m1.command;
 
 import fr.uga.miage.m1.entity.*;
-import fr.uga.miage.m1.model.GroupeMedicamentPrincipeActifKey;
-import fr.uga.miage.m1.model.MedicamentExcipientKey;
+import fr.uga.miage.m1.model.compositeKey.GroupeMedicamentPrincipeActifKey;
+import fr.uga.miage.m1.model.compositeKey.MedicamentExcipientKey;
 import fr.uga.miage.m1.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

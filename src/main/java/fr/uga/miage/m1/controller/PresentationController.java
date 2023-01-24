@@ -31,7 +31,7 @@ public class PresentationController {
                             @RequestParam("size") int size,
                             @RequestParam(value = "libelle") Optional<String> sortBy) {
 
-        Sort sort = Sort.by("libelle").descending();
+        Sort sort = Sort.by(sortBy.orElse("libelle")).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
         Page<Presentation> presentations = presentationRepo.findAll(pageable);

@@ -38,6 +38,15 @@ public interface PresentationMapper {
                         .map(med -> autoMapper.entityToDto(med)).collect(Collectors.toList())
         );
 
+
+        dto.setPrescriptions(
+                presentation.getMedicament()
+                        .getPrescriptions()
+                        .stream()
+                        .map(prescription -> autoMapper.entityToDto(prescription))
+                        .collect(Collectors.toList())
+        );
+
         dto.setGroupeMedicament(groupeMedicamentDTO);
 
         return dto;

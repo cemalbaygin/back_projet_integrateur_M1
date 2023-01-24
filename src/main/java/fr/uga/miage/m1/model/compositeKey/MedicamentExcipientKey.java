@@ -1,4 +1,4 @@
-package fr.uga.miage.m1.model;
+package fr.uga.miage.m1.model.compositeKey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

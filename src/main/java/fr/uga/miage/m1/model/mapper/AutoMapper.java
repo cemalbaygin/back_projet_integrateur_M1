@@ -2,9 +2,11 @@ package fr.uga.miage.m1.model.mapper;
 
 import fr.uga.miage.m1.entity.Fabricant;
 import fr.uga.miage.m1.entity.Medicament;
+import fr.uga.miage.m1.entity.Prescription;
 import fr.uga.miage.m1.entity.Presentation;
 import fr.uga.miage.m1.model.dto.FabricantDTO;
 import fr.uga.miage.m1.model.dto.MedicamentDTO;
+import fr.uga.miage.m1.model.dto.PrescriptionDTO;
 import fr.uga.miage.m1.model.dto.PresentationDTO;
 import org.mapstruct.Mapper;
 
@@ -15,4 +17,6 @@ public interface AutoMapper {
     FabricantDTO entityToDto(Fabricant entity);
 
     MedicamentDTO entityToDto(Medicament entity);
+
+    PrescriptionDTO entityToDto(Prescription prescription);
 }
