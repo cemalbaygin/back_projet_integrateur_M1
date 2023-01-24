@@ -1,6 +1,6 @@
 package fr.uga.miage.m1.entity;
 
-import fr.uga.miage.m1.model.GroupeMedicamentPrincipeActifKey;
+import fr.uga.miage.m1.model.compositeKey.GroupeMedicamentPrincipeActifKey;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -26,4 +28,11 @@ public class Presentation {
 
     @ManyToOne
     private Medicament medicament;
+
+    @OneToMany(mappedBy = "presentation")
+    private List<CommandePresentation> commandePresentations;
+
+    @Column
+    @NonNull
+    private Integer quantiteStock;
 }

@@ -33,6 +33,10 @@ public class Utilisateur implements UserDetails {
     @Column
     private String password;
 
+    @Column
+    @OneToMany(mappedBy = "utilisateur")
+    private List<Commande> commandes;
+
     @Enumerated(EnumType.STRING)
     @Column
     private Role role;
