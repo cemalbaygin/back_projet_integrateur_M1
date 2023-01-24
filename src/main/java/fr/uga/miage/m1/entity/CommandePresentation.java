@@ -1,7 +1,7 @@
 package fr.uga.miage.m1.entity;
 
 import fr.uga.miage.m1.model.EtatCommande;
-import fr.uga.miage.m1.model.compositeKey.CommandePresentationKey;
+import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

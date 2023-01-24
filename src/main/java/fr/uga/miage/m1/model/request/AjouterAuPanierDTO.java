@@ -1,4 +1,4 @@
-package fr.uga.miage.m1.model.requestDTO;
+package fr.uga.miage.m1.model.request;
 
 import lombok.Builder;
 import lombok.Data;
