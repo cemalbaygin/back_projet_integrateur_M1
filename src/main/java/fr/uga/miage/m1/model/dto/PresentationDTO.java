@@ -1,7 +1,5 @@
 package fr.uga.miage.m1.model.dto;
 
-import fr.uga.miage.m1.entity.Fabricant;
-import fr.uga.miage.m1.entity.Medicament;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +11,5 @@ public class PresentationDTO {
     Double prix;
     Integer tauxRemboursement;
     MedicamentDTO medicament;
+    Integer quantiteStock;
 }

@@ -32,9 +32,23 @@ public class PanierController {
     public ResponseEntity<List<PanierPresentationDTO>> addToPanier(Authentication authentication,
                                                                    @RequestBody AjouterAuPanierDTO dto) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+        return new ResponseEntity<>(service.addPresentationToPanier(utilisateur, dto), HttpStatus.OK);
+    }
 
+    @DeleteMapping
+    public ResponseEntity<List<PanierPresentationDTO>> deleteFromPanier(Authentication authentication,
+                                                                        @RequestParam("code_CIP13") String codeCIP13) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
 
-        return new ResponseEntity<>(service.addPresentationToPanier(dto, utilisateur), HttpStatus.OK);
+        return new ResponseEntity<>(service.deleteFromPanier(utilisateur, codeCIP13), HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<List<PanierPresentationDTO>> updateFromPanier(Authentication authentication,
+                                                                        @RequestBody AjouterAuPanierDTO dto) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+
+        return new ResponseEntity<>(service.updateFromPanier(utilisateur, dto), HttpStatus.OK);
     }
 
 }

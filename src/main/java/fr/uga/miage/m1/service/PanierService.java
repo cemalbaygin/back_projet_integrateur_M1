@@ -42,9 +42,9 @@ public class PanierService {
         return commandeMapper.panierToDto(getOrCreatePanier(utilisateur).getCommandePresentations());
     }
 
-    public List<PanierPresentationDTO> addPresentationToPanier(AjouterAuPanierDTO dto, Utilisateur utilisateur) {
+    public List<PanierPresentationDTO> addPresentationToPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
         Commande commande = this.getOrCreatePanier(utilisateur);
-        Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getPresentation_id())).orElseThrow();
+        Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getCode_CIP13())).orElseThrow();
 
         CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), pres.getCodeCIP13());
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElse(null);
@@ -58,6 +58,31 @@ public class PanierService {
         }
 
         commandesPresentationRepository.save(commandePresentation);
+
+        return commandeMapper.panierToDto(commande.getCommandePresentations());
+    }
+
+    public List<PanierPresentationDTO> updateFromPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
+        Commande commande = this.getOrCreatePanier(utilisateur);
+        Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getCode_CIP13())).orElseThrow();
+
+        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), pres.getCodeCIP13());
+        CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
+        
+        commandePresentation.setQuantite(dto.getQuantite());
+
+        commandesPresentationRepository.save(commandePresentation);
+
+        return commandeMapper.panierToDto(commande.getCommandePresentations());
+    }
+
+
+    public List<PanierPresentationDTO> deleteFromPanier(Utilisateur utilisateur, String codeCIP13) {
+        Commande commande = this.getOrCreatePanier(utilisateur);
+
+        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), Long.valueOf(codeCIP13));
+        CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
+        commandesPresentationRepository.delete(commandePresentation);
 
         return commandeMapper.panierToDto(commande.getCommandePresentations());
     }

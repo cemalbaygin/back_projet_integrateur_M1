@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class AjouterAuPanierDTO {
-    String presentation_id;
+    String code_CIP13;
     Integer quantite;
 }
