@@ -2,10 +2,12 @@ package fr.uga.miage.m1.auth;
 
 import fr.uga.miage.m1.constants.Role;
 import fr.uga.miage.m1.entity.Utilisateur;
+import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.repository.UserRepository;
 import fr.uga.miage.m1.config.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.mapstruct.factory.Mappers;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,8 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    private final AutoMapper autoMapper = Mappers.getMapper(AutoMapper.class);
 
     public AuthenticationResponse register(RegisterRequest request) {
         System.out.println("request" + request.toString());
@@ -39,6 +43,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(u);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .utilisateur(autoMapper.entityToDto(u))
                 .build();
     }
 
@@ -49,13 +54,13 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        Utilisateur user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
-                .firstname(user.getFirstname())
+                .utilisateur(autoMapper.entityToDto(user))
                 .build();
     }
 }

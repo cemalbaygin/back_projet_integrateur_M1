@@ -10,6 +10,5 @@ public class PresentationDTO {
     String libelle;
     Double prix;
     Integer tauxRemboursement;
-    MedicamentDTO medicament;
     Integer quantiteStock;
 }

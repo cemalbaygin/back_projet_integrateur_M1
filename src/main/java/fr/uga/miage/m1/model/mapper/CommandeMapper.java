@@ -13,11 +13,18 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface CommandeMapper {
     AutoMapper autoMapper = Mappers.getMapper(AutoMapper.class);
+    PresentationMapper presentationMapper = Mappers.getMapper(PresentationMapper.class);
 
-    PanierPresentationDTO panierToDto(CommandePresentation entity);
 
     default List<PanierPresentationDTO> panierToDto(List<CommandePresentation> panier) {
-        return panier.stream().map(commandePresentation -> panierToDto(commandePresentation)).collect(Collectors.toList());
+        return panier.stream().map(commandePresentation -> {
+            PanierPresentationDTO dto = new PanierPresentationDTO();
+            dto.setPresentation(autoMapper.entityToDto(commandePresentation.getPresentation()));
+            dto.setMedicament(autoMapper.entityToDto(commandePresentation.getPresentation().getMedicament()));
+            dto.setQuantite(commandePresentation.getQuantite());
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     default CommandeCompleteDTO entityToDto(Commande commande) {

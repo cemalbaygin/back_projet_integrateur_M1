@@ -1,15 +1,11 @@
 package fr.uga.miage.m1.model.mapper;
 
 import fr.uga.miage.m1.entity.GroupeMedicament;
+import fr.uga.miage.m1.entity.Medicament;
 import fr.uga.miage.m1.entity.Presentation;
-import fr.uga.miage.m1.model.dto.GroupeMedicamentDTO;
-import fr.uga.miage.m1.model.dto.MedicamentDTO;
-import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
-import fr.uga.miage.m1.model.dto.PrincipeActifDTO;
-import lombok.RequiredArgsConstructor;
+import fr.uga.miage.m1.model.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Collectors;
 
@@ -17,12 +13,40 @@ import java.util.stream.Collectors;
 public interface PresentationMapper {
     AutoMapper autoMapper = Mappers.getMapper(AutoMapper.class);
 
+
+    default PresentationMedicamentDTO presentationMedicamentDTO(Presentation entity) {
+        PresentationMedicamentDTO dto = new PresentationMedicamentDTO();
+
+        dto.setPresentation(autoMapper.entityToDto(entity));
+        dto.setMedicament(autoMapper.entityToDto(entity.getMedicament()));
+
+        return dto;
+    }
+
     default PresentationCompleteDTO entityToDto(Presentation presentation) {
+        Medicament medicament = presentation.getMedicament();
         PresentationCompleteDTO dto = new PresentationCompleteDTO();
-        dto.setPresentation(autoMapper.entityToDto(presentation));
+        dto.setPresentations(
+                medicament
+                        .getPresentations()
+                        .stream().map(pres -> autoMapper.entityToDto(pres))
+                        .collect(Collectors.toList())
+        );
+
+        dto.setMedicament(autoMapper.entityToDto(medicament));
+
+        dto.setExcipients(
+                medicament.getMedicamentAssos().stream().map(medicamentExcipient -> {
+                            ExcipientDTO dtoExcipient = new ExcipientDTO();
+                            dtoExcipient.setDosage(medicamentExcipient.getDosage());
+                            dtoExcipient.setLibelle(medicamentExcipient.getExcipient().getLibelle());
+                            return dtoExcipient;
+                        }
+                ).collect(Collectors.toList())
+        );
 
         GroupeMedicamentDTO groupeMedicamentDTO = new GroupeMedicamentDTO();
-        GroupeMedicament groupe = presentation.getMedicament().getGroupeMedicament();
+        GroupeMedicament groupe = medicament.getGroupeMedicament();
         groupeMedicamentDTO.setLibelle(groupe.getLibelle());
 
         groupeMedicamentDTO.setPrincipesActifs(
@@ -40,7 +64,7 @@ public interface PresentationMapper {
 
 
         dto.setPrescriptions(
-                presentation.getMedicament()
+                medicament
                         .getPrescriptions()
                         .stream()
                         .map(prescription -> autoMapper.entityToDto(prescription))
