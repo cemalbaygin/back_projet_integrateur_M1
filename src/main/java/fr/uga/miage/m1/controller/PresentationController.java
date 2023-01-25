@@ -30,13 +30,14 @@ public class PresentationController {
     public Normalizer index(@RequestParam("page") int page,
                             @RequestParam("size") int size,
                             @RequestParam("sortBy") Optional<String> sortBy,
-                            @RequestParam("libelle") Optional<String> libelle,
-                            @RequestParam("prix") Optional<Integer> prix) {
+                            @RequestParam("search") Optional<String> recherche) {
 
+        System.out.println(page);
+        System.out.println(size);
         Sort sort = Sort.by(sortBy.orElse("libelle")).descending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size);
 
-        return presentationService.getPresentationsWithFilter(libelle,prix,pageable);
+        return presentationService.getPresentationsWithFilter(recherche,pageable);
     }
 
     @GetMapping("{codeCIP13}")
