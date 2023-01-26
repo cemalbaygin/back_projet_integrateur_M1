@@ -33,7 +33,7 @@ public class PanierService {
             commande.setEtat(EtatCommande.panier);
             commande.setUtilisateur(utilisateur);
             commande.setDateAchat(new Timestamp(System.currentTimeMillis()));
-            commandeRepository.save(commande);
+            commande = commandeRepository.save(commande);
         }
         return commande;
     }
@@ -42,7 +42,7 @@ public class PanierService {
         return commandeMapper.panierToDto(getOrCreatePanier(utilisateur).getCommandePresentations());
     }
 
-    public List<PanierPresentationDTO> addPresentationToPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
+    public Boolean addPresentationToPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
         Commande commande = this.getOrCreatePanier(utilisateur);
         Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getCode_CIP13())).orElseThrow();
 
@@ -56,10 +56,9 @@ public class PanierService {
         } else {
             commandePresentation.setQuantite(commandePresentation.getQuantite() + dto.getQuantite());
         }
-
         commandesPresentationRepository.save(commandePresentation);
 
-        return commandeMapper.panierToDto(commande.getCommandePresentations());
+        return true;
     }
 
     public List<PanierPresentationDTO> updateFromPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
@@ -68,12 +67,12 @@ public class PanierService {
 
         CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), pres.getCodeCIP13());
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
-        
+
         commandePresentation.setQuantite(dto.getQuantite());
 
         commandesPresentationRepository.save(commandePresentation);
 
-        return commandeMapper.panierToDto(commande.getCommandePresentations());
+        return getPanier(utilisateur);
     }
 
 
@@ -84,6 +83,6 @@ public class PanierService {
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
         commandesPresentationRepository.delete(commandePresentation);
 
-        return commandeMapper.panierToDto(commande.getCommandePresentations());
+        return getPanier(utilisateur);
     }
 }

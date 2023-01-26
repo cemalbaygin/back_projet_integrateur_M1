@@ -7,6 +7,8 @@ import fr.uga.miage.m1.model.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -57,9 +59,12 @@ public interface PresentationMapper {
                     return principeActifDTO;
                 }).collect(Collectors.toList()));
 
-        groupeMedicamentDTO.setMedicaments(
-                groupe.getMedicaments().stream()
-                        .map(med -> autoMapper.entityToDto(med)).collect(Collectors.toList())
+
+        List<Presentation> presMed = groupe.getMedicaments().stream().map(med -> med.getPresentations().stream().findFirst()).flatMap(Optional::stream).collect(Collectors.toList());
+
+        groupeMedicamentDTO.setPresentationsMedicaments(
+                presMed.stream()
+                        .map(this::presentationMedicamentDTO).collect(Collectors.toList())
         );
 
 

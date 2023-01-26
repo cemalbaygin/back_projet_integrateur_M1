@@ -29,8 +29,8 @@ public class PanierController {
     }
 
     @PostMapping
-    public ResponseEntity<List<PanierPresentationDTO>> addToPanier(Authentication authentication,
-                                                                   @RequestBody AjouterAuPanierDTO dto) {
+    public ResponseEntity<Boolean> addToPanier(Authentication authentication,
+                                               @RequestBody AjouterAuPanierDTO dto) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
         return new ResponseEntity<>(service.addPresentationToPanier(utilisateur, dto), HttpStatus.OK);
     }
