@@ -27,7 +27,7 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
         System.out.println("request" + request.toString());
 
-        Utilisateur u = userRepository.findByEmail(request.getEmail()).orElse(null);
+        Utilisateur u = userRepository.findByEmail(request.getEmail().toLowerCase()).orElse(null);
 
         if (u == null) {
             u = Utilisateur.builder()

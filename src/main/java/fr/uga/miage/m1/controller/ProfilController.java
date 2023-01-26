@@ -31,9 +31,6 @@ public class ProfilController {
 
     @PostMapping
     public ResponseEntity<UtilisateurDTO> postProfil(Authentication authentication,@RequestBody ProfilPostDTO dto){
-        log.info("lastname "+dto.getLastname()+"firstname "+dto.getFirstname()+"gmail "+dto.getEmail());
-        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
-        utilisateur= userService.changeMdp(utilisateur,dto);
-        return new ResponseEntity<>(mapper.entityToDto(utilisateur), HttpStatus.OK);
+        return userService.changeMdp(authentication,dto);
     }
 }
