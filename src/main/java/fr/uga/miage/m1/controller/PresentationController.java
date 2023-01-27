@@ -1,11 +1,7 @@
 package fr.uga.miage.m1.controller;
 
-import fr.uga.miage.m1.entity.Presentation;
 import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
-import fr.uga.miage.m1.model.mapper.AutoMapper;
-import fr.uga.miage.m1.model.mapper.PresentationMapper;
-import fr.uga.miage.m1.repository.PresentationsRepository;
 import fr.uga.miage.m1.service.PresentationService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
