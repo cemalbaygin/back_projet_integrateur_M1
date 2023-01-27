@@ -26,14 +26,6 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Tests unitaires avec coverage
-        run: mvn test:coverage
-      - name: Test du linter
-        run: yarn lint
-
-            runs-on: ubuntu-latest
 
     steps:
       - name: Premiere etape
