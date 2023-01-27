@@ -13,5 +13,5 @@ jobs:
           distribution: 'adopt'
       - name: Checkout Production repository
         uses: actions/checkout@v2
-      - name: Build and test with coverage
-        run: mvn test jacoco:report
+      - name: Build and test
+        run: mvn test
