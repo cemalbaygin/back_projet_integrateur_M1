@@ -33,22 +33,17 @@ public class CommandeService {
     private final AutoMapper mapper;
 
     public List<CommandeCompleteDTO> getListCommandes(Utilisateur utilisateur) {
-        log.info("Avant get commandes");
-        List<Commande> commandes = userRepository.findByEmail(utilisateur.getEmail()).orElse(null).getCommandes();
-        log.info("Après get commandes");
+        List<Commande> commandes = userRepository.findByEmail(utilisateur.getEmail()).orElseThrow().getCommandes();
         List<Commande> commandes1 = new ArrayList<>();
 
-        log.info("Avant filtre list commandes (panier): ");
         for (Commande c : commandes) {
             if (c.getEtat() != EtatCommande.panier) {
                 commandes1.add(c);
             }
         }
-        log.info("Après filtre list commandes (panier): ");
 
         List<CommandeCompleteDTO> commandeCompleteDTOS = new ArrayList<>();
         for (Commande c : commandes1) {
-            log.info("id de la commande: " + c.getId());
             List<CommandePresentationDTO> presentationDTOS = new ArrayList<>();
             for (CommandePresentation cp : c.getCommandePresentations()) {
                 var presentation = CommandePresentationDTO.builder()
@@ -58,17 +53,12 @@ public class CommandeService {
                         .quantite(cp.getQuantite())
                         .build();
                 presentationDTOS.add(presentation);
-                log.info("presention : ");
-                log.info("Libellé de la presentation :" + cp.getPresentation().getLibelle());
-                log.info("Quantite de la presentation :" + cp.getQuantite());
-                log.info("-----------");
             }
             var commandeCompleteDTO = CommandeCompleteDTO.builder()
                     .presentations(presentationDTOS)
                     .commandeDTO(mapper.entityToDto(c))
                     .build();
             commandeCompleteDTOS.add(commandeCompleteDTO);
-            log.info("total presentation de la commande: " + c.getCommandePresentations().size());
         }
         return commandeCompleteDTOS;
     }
