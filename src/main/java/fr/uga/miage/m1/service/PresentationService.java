@@ -2,6 +2,7 @@ package fr.uga.miage.m1.service;
 
 import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.dto.Normalizer;
+import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
 import fr.uga.miage.m1.model.dto.PresentationDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.mapper.AutoMapper;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,11 @@ public class PresentationService {
         Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
         return presentations.map(this.presentationMapper::presentationMedicamentDTO);
+    }
+
+    public PresentationCompleteDTO getPresentation(Long codeCIP13) throws NoSuchElementException{
+        return presentationMapper.entityToDto(presentationRepo.findById(Long.valueOf(codeCIP13))
+                .orElseThrow(() -> new NoSuchElementException("Presentation not found with codeCIP13 : "+codeCIP13)));
     }
 
     static Specification<Presentation> hasLibelle(String libelle) {
