@@ -3,6 +3,7 @@ package fr.uga.miage.m1.service;
 import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.dto.Normalizer;
 import fr.uga.miage.m1.model.dto.PresentationDTO;
+import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.model.mapper.PresentationMapper;
 import fr.uga.miage.m1.repository.PresentationsRepository;
@@ -31,31 +32,13 @@ public class PresentationService {
     private final EntityManager entityManager;
 
 
-    public Normalizer getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
-        Page<Presentation> presentations;
-
-        /*if(recherche.isPresent()){
-            Specification<Presentation> specification = hasPrincipeActifLibelle(recherche.get());
-            //specification = specification.or(hasMedicamentLibelle(recherche.get()));
-            //specification = specification.or(hasPrincipeActifLibelle(recherche.get()));
-
-            presentations = presentationRepo.findAll(specification,paging);
-        }
-        else{
-            presentations = presentationRepo.findAll(paging);
-        }*/
+    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
 
         Specification<Presentation> specification = buildSpecifications(recherche);
-        System.out.println("ouiAvant1");
-        presentations = presentationRepo.findAll(specification,paging);
-        System.out.println("oui1");
-        List<Presentation> res = presentations.getContent();
-        System.out.println("oui2");
-        List<PresentationDTO> collect = res.stream().map(e -> autoMapper.entityToDto(e)).collect(Collectors.toList());
-        System.out.println("oui3");
-        return new Normalizer(collect, presentations);
 
+        Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
+        return presentations.map(this.presentationMapper::presentationMedicamentDTO);
     }
 
     static Specification<Presentation> hasLibelle(String libelle) {

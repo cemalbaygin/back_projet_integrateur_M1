@@ -28,17 +28,4 @@ public interface CommandeMapper {
         }).collect(Collectors.toList());
     }
 
-    default CommandeCompleteDTO entityToDto(Commande commande) {
-        CommandeCompleteDTO dto = new CommandeCompleteDTO();
-        dto.setCommandeDTO(autoMapper.entityToDto(commande));
-
-        dto.setPresentations(
-                commande.getCommandePresentations()
-                        .stream()
-                        .map(commandePresentation -> autoMapper.entityToDto(commandePresentation))
-                        .collect(Collectors.toList())
-        );
-
-        return dto;
-    }
 }
