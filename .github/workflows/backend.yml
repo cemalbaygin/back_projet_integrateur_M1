@@ -30,9 +30,10 @@ jobs:
     steps:
       - name: Premiere etape
         run: echo "premiere etape okkk"
-      # - name: Installation des dependences
-      #   run: |
-      #     ./mvnw clean install
+      - name: Installation des dependences
+        run: mvn clean install
+      - name: Tests
+        run: mvn test
       # - name: Lancement des tests unitaires avec couverture
       #   run: |
       #     ./mvnw test jacoco:report
