@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Etablissement")
 @Getter
@@ -12,24 +14,28 @@ import lombok.Setter;
 public class Etablissement {
 
     @Id
-    @Column(name = "id_etablissement")
+    @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "libelle")
+    @Column
     @NotNull(message = "le libellé de l'établissement ne doit pas être null")
     private String libelle;
 
-    @Column(name = "adresse")
+    @Column
     @NotNull(message = "une adresse doit e^tre renseignée")
     private String adresse;
 
-    @Column(name = "numero_telephone")
+    @Column
     private String numTelephone;
 
-    @Column(name = "type")
+    @Column
     private String type;
 
-    @Column(name = "estSurveillanceRenforcee")
+    @Column
     private boolean estSurveillanceRenforcee;
+
+    @OneToMany(mappedBy= "etablissement")
+    private List<Utilisateur> utilisateurs;
+
 }

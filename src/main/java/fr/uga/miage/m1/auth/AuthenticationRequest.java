@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class  AuthenticationRequest {
   @NonNull
   private String email;
   @NonNull

@@ -35,4 +35,8 @@ public class Presentation {
     @Column
     @NonNull
     private Integer quantiteStock;
+
+    @Column
+    @OneToMany(mappedBy = "presentation")
+    private List<PresentationCommandeType> presentationCommandeTypes;
 }
