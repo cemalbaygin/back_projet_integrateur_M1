@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -24,10 +25,6 @@ import java.util.Optional;
 public class PresentationController {
 
     private final PresentationService presentationService;
-
-    private final PresentationsRepository presentationRepo;
-    private final AutoMapper autoMapper;
-    private final PresentationMapper presentationMapper;
 
     @GetMapping
     public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestParam("search") Optional<String> recherche,
@@ -39,9 +36,11 @@ public class PresentationController {
     }
 
     @GetMapping("{codeCIP13}")
-    public PresentationCompleteDTO show(@PathVariable Long codeCIP13) {
-        Presentation presentation = presentationRepo.findById(Long.valueOf(codeCIP13)).orElseThrow();
-
-        return presentationMapper.entityToDto(presentation);
+    public ResponseEntity<PresentationCompleteDTO> show(@PathVariable Long codeCIP13) {
+        try{
+            return new ResponseEntity<PresentationCompleteDTO>(presentationService.getPresentation(codeCIP13), HttpStatus.OK);
+        }catch(NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

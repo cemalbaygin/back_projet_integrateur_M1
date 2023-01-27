@@ -1,29 +1,52 @@
 package fr.uga.miage.m1.controller;
 
+import fr.uga.miage.m1.config.ApplicationConfig;
+import fr.uga.miage.m1.config.JwtAuthenticationFilter;
+import fr.uga.miage.m1.config.JwtService;
 import fr.uga.miage.m1.config.SecurityConfiguration;
 import fr.uga.miage.m1.entity.Presentation;
+import fr.uga.miage.m1.model.dto.MedicamentDTO;
 import fr.uga.miage.m1.model.dto.Normalizer;
 import fr.uga.miage.m1.model.dto.PresentationDTO;
+import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.service.PresentationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = PresentationController.class, excludeAutoConfiguration = SecurityConfiguration.class)
+@WithMockUser
+@AutoConfigureMockMvc(addFilters = false)
 public class PresentationControllerTest {
 
     @Autowired
@@ -32,48 +55,132 @@ public class PresentationControllerTest {
     @MockBean
     private PresentationService presentationService;
 
-    private PresentationDTO dto1;
-    private PresentationDTO dto2;
-    private PresentationDTO dto3;
-    private Page<PresentationDTO> presentationDtos;
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private PresentationMedicamentDTO dto1;
+    private PresentationMedicamentDTO dto2;
+    private PresentationMedicamentDTO dto3;
+
+    private PresentationDTO presentationDto1;
+    private PresentationDTO presentationDto2;
+    private PresentationDTO presentationDto3;
+
+    private MedicamentDTO medicamentDto1;
+    private MedicamentDTO medicamentDto2;
+    private MedicamentDTO medicamentDto3;
+
+    private Page<PresentationMedicamentDTO> presentationDtos;
+
+    private static final String PRESENTATION_PATH = "/public/presentations";
 
 
 
     /**
      * Test que la route /api/public/presentations renvoie la liste des présentations présents dans la bdd
-     * @see PresentationController#index(Optional, Pageable) 
+     * @see PresentationController#index(Optional, Pageable)
      */
+
 
     @BeforeEach
     void before(){
 
-        this.dto1 = new PresentationDTO();
-        dto1.setCodeCIP13(1234443L);
-        dto1.setLibelle("plaquette(s) aluminium de 28 comprimé(s)");
-        dto1.setPrix(13d);
-        dto1.setTauxRemboursement(65);
-        dto1.setQuantiteStock(34);
+        this.presentationDto1 = new PresentationDTO();
+        presentationDto1.setCodeCIP13(1234443L);
+        presentationDto1.setLibelle("plaquette(s) aluminium de 28 comprimé(s)");
+        presentationDto1.setPrix(13d);
+        presentationDto1.setTauxRemboursement(65);
+        presentationDto1.setQuantiteStock(34);
 
-        this.dto2 = new PresentationDTO();
-        dto2.setCodeCIP13(4534443L);
-        dto2.setLibelle("plaquette(s) PVC PVDC aluminium de 14 comprimé(s)");
-        dto2.setPrix(11d);
-        dto2.setTauxRemboursement(65);
-        dto2.setQuantiteStock(14);
+        this.presentationDto2 = new PresentationDTO();
+        presentationDto2.setCodeCIP13(4534443L);
+        presentationDto2.setLibelle("plaquette(s) PVC PVDC aluminium de 14 comprimé(s)");
+        presentationDto2.setPrix(11d);
+        presentationDto2.setTauxRemboursement(65);
+        presentationDto2.setQuantiteStock(14);
 
-        this.dto3 = new PresentationDTO();
-        dto3.setCodeCIP13(6784443L);
-        dto3.setLibelle("1 plaquette(s) PVC PVDC aluminium de 1 comprimé(s)");
-        dto3.setPrix(17d);
-        dto3.setTauxRemboursement(65);
-        dto3.setQuantiteStock(20);
+        this.presentationDto3 = new PresentationDTO();
+        presentationDto3.setCodeCIP13(6784443L);
+        presentationDto3.setLibelle("1 plaquette(s) PVC PVDC aluminium de 1 comprimé(s)");
+        presentationDto3.setPrix(17d);
+        presentationDto3.setTauxRemboursement(65);
+        presentationDto3.setQuantiteStock(20);
+
+        this.medicamentDto1 = new MedicamentDTO();
+        medicamentDto1.setLibelle("ACICLOVIR EG 800 mg, comprimé");
+        medicamentDto1.setFabricants(null);
+        medicamentDto1.setCodeCIS(64776881l);
+        medicamentDto1.setEstReference(true);
+        medicamentDto1.setFormePharmaceutique("comprimé");
+        medicamentDto1.setASurveillanceRenforce(true);
+
+        this.medicamentDto2 = new MedicamentDTO();
+        medicamentDto2.setLibelle("ACICLOVIR HIKMA 250 mg, poudre pour solution pour perfusion");
+        medicamentDto2.setFabricants(null);
+        medicamentDto2.setCodeCIS(56876881l);
+        medicamentDto2.setEstReference(true);
+        medicamentDto2.setFormePharmaceutique("poudre pour solution pour perfusion");
+        medicamentDto2.setASurveillanceRenforce(false);
+
+        this.medicamentDto3 = new MedicamentDTO();
+        medicamentDto3.setLibelle("ACICLOVIR HIKMA 500 mg, poudre pour solution pour perfusion");
+        medicamentDto3.setFabricants(null);
+        medicamentDto3.setCodeCIS(6857881l);
+        medicamentDto3.setEstReference(false);
+        medicamentDto3.setFormePharmaceutique("poudre pour solution pour perfusion");
+        medicamentDto3.setASurveillanceRenforce(false);
+
+        this.dto1 = new PresentationMedicamentDTO();
+        dto1.setPresentation(presentationDto1);
+        dto1.setMedicament(medicamentDto1);
+
+        this.dto2 = new PresentationMedicamentDTO();
+        dto2.setPresentation(presentationDto2);
+        dto2.setMedicament(medicamentDto2);
+
+        this.dto3 = new PresentationMedicamentDTO();
+        dto3.setPresentation(presentationDto3);
+        dto3.setMedicament(medicamentDto3);
+
+
     }
 
     @Test
-    void getAllPresentations(){
+    void getAllPresentations() throws Exception {
         final Pageable pageable = PageRequest.of(0,3);
-        List<PresentationDTO> list = Arrays.asList(dto1, dto2, dto3);
-        //Page<Presentation> presentations = new PageImpl<Presentation>();
+        List<PresentationMedicamentDTO> list = Arrays.asList(dto1, dto2, dto3);
+
+        presentationDtos = new PageImpl<PresentationMedicamentDTO>(list,pageable, list.size());
+
+        when(presentationService.getPresentationsWithFilter(any(),any())).thenReturn(presentationDtos);
+
+        doGetPageWithParams(PRESENTATION_PATH,
+                Optional.empty(),
+                Optional.empty())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].presentation.codeCIP13").value(1234443L))
+                .andExpect(jsonPath("$.content[1].presentation.codeCIP13").value(4534443L))
+                .andExpect(jsonPath("$.content[2].presentation.codeCIP13").value(6784443L));
+
+
+    }
+
+    private ResultActions doGetPageWithParams( String path,
+                                               Optional<String> recherche,
+                                               Optional<Pageable> pageable) throws Exception {
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        if(recherche.isPresent()){
+            params.add("search", recherche.get());
+        }
+        if(pageable.isPresent()){
+            params.add("size",String.valueOf(pageable.get().getPageSize()));
+            params.add("page",String.valueOf(pageable.get().getPageNumber()));
+        }
+
+        return mvc.perform(get(path).params(params)
+                .contentType(MediaType.APPLICATION_JSON));
     }
 
 }
+
