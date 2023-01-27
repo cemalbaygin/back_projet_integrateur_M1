@@ -1,12 +1,9 @@
 package fr.uga.miage.m1.service;
 
-import fr.uga.miage.m1.entity.Commande;
-import fr.uga.miage.m1.entity.CommandePresentation;
-import fr.uga.miage.m1.entity.Presentation;
-import fr.uga.miage.m1.entity.Utilisateur;
+import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.EtatCommande;
-import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import fr.uga.miage.m1.model.dto.PanierPresentationDTO;
+import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import fr.uga.miage.m1.model.mapper.CommandeMapper;
 import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.repository.CommandesPresentationRepository;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -26,7 +24,7 @@ public class PanierService {
     private final CommandesPresentationRepository commandesPresentationRepository;
     private final CommandeMapper commandeMapper;
 
-    private Commande getOrCreatePanier(Utilisateur utilisateur) {
+    public Commande getOrCreatePanier(Utilisateur utilisateur) {
         Commande commande = commandeRepository.getPanier(utilisateur.getId()).orElse(null);
         if (commande == null) {
             commande = new Commande();
@@ -82,6 +80,37 @@ public class PanierService {
         CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), Long.valueOf(codeCIP13));
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
         commandesPresentationRepository.delete(commandePresentation);
+
+        return getPanier(utilisateur);
+    }
+
+    public List<PanierPresentationDTO> substituerProduit(Utilisateur utilisateur, String codeCIP13, Integer quantite) {
+        Commande commande = this.getOrCreatePanier(utilisateur);
+
+        Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
+
+        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), presentation.getCodeCIP13());
+        CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
+
+        List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
+        Optional<Presentation> presentationSubstitute = presentationMedicament.stream().filter(pres -> pres.getQuantiteStock() - quantite >= 0 && pres.getCodeCIP13() != Long.valueOf(codeCIP13)).findAny();
+
+        if (!presentationSubstitute.isPresent()) {
+            List<Medicament> med = presentation.getMedicament()
+                    .getGroupeMedicament()
+                    .getMedicaments();
+
+            for (int i = 0; i < med.size(); i++) {
+                presentationSubstitute = med.get(i).getPresentations().stream().filter(
+                        p -> p.getCodeCIP13() != presentation.getCodeCIP13() && p.getQuantiteStock() - quantite >= 0
+                ).findAny();
+
+                if (presentationSubstitute.isPresent()) continue;
+            }
+        }
+
+        commandePresentation.setPresentation(presentationSubstitute.get());
+        commandesPresentationRepository.save(commandePresentation);
 
         return getPanier(utilisateur);
     }

@@ -22,6 +22,7 @@ public interface CommandeMapper {
             dto.setPresentation(autoMapper.entityToDto(commandePresentation.getPresentation()));
             dto.setMedicament(autoMapper.entityToDto(commandePresentation.getPresentation().getMedicament()));
             dto.setQuantite(commandePresentation.getQuantite());
+            dto.setPrescriptions(commandePresentation.getPresentation().getMedicament().getPrescriptions());
 
             return dto;
         }).collect(Collectors.toList());
