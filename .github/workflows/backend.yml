@@ -3,8 +3,7 @@ name: backend-integrator-projet CI
 on:
   push:
     branches:
-      - "master"
-      - "develop"
+      - "**"
     paths:
       - "src/main/java/fr/uga/miage/m1/controller"
       - "src/main/java/fr/uga/miage/m1/entity"
@@ -13,20 +12,14 @@ on:
       - "src/main/java/fr/uga/miage/m1/model/service"
     pull_request:
       branches:
-        - "master"
-        - "develop"
+        - "**"
       paths:
-        - "src/main/java/fr/uga/miage/m1/controller"
-        - "src/main/java/fr/uga/miage/m1/entity"
-        - "src/main/java/fr/uga/miage/m1/model/mapper"
-        - "src/main/java/fr/uga/miage/m1/model/dto"
-        - "src/main/java/fr/uga/miage/m1/model/service"
+        - "src/main/java/fr/uga/miage/m1/**"
     workflow_dispatch:
 
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-
     steps:
       - name: Premiere etape
         run: echo "premiere etape okkk"
