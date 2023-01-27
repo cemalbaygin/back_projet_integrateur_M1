@@ -34,7 +34,7 @@ public class PresentationService {
     public Normalizer getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
         Page<Presentation> presentations;
 
-        if(recherche.isPresent()){
+        /*if(recherche.isPresent()){
             Specification<Presentation> specification = hasPrincipeActifLibelle(recherche.get());
             //specification = specification.or(hasMedicamentLibelle(recherche.get()));
             //specification = specification.or(hasPrincipeActifLibelle(recherche.get()));
