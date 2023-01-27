@@ -10,6 +10,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
+          distribution: openjdk
       - name: Checkout Production repository
         uses: actions/checkout@v2
       - name: Build and test
