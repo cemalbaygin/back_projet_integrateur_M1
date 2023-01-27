@@ -52,5 +52,8 @@ public class Medicament {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "MedicamentPrescription", joinColumns = @JoinColumn(name = "codeCIS"), inverseJoinColumns = @JoinColumn(name = "id"))
     private List<Prescription> prescriptions;
+
+    @OneToMany(mappedBy = "medicament")
+    private List<Presentation> presentations;
 }
  

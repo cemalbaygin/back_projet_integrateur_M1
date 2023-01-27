@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PanierPresentationDTO {
+public class PresentationMedicamentDTO {
     PresentationDTO presentation;
     MedicamentDTO medicament;
-    private Integer quantite;
 }

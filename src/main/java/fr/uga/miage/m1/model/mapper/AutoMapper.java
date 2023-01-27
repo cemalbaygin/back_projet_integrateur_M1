@@ -17,4 +17,6 @@ public interface AutoMapper {
     CommandeDTO entityToDto(Commande entity);
 
     CommandePresentationDTO entityToDto(CommandePresentation entity);
+
+    UtilisateurDTO entityToDto(Utilisateur entity);
 }

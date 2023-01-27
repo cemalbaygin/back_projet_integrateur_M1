@@ -1,5 +1,6 @@
 package fr.uga.miage.m1.auth;
 
+import fr.uga.miage.m1.model.dto.UtilisateurDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,5 @@ public class AuthenticationResponse {
 
   private String token;
 
-  private String firstname;
+  private UtilisateurDTO utilisateur;
 }
