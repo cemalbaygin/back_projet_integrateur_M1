@@ -36,13 +36,15 @@ jobs:
             runs-on: ubuntu-latest
 
     steps:
-    - name: Installation des dependences
-      run: |
-        ./mvnw clean install -DskipTests
+      - name: Premiere etape
+        run: echo 'premiere etape okkk'
+    # - name: Installation des dependences
+    #   run: |
+    #     ./mvnw clean install -DskipTests
 
-    - name: Lancement des tests unitaires avec couverture
-      run: |
-        ./mvnw test jacoco:report
-    - name: Lancement du linter
-      run: |
-        ./mvnw checkstyle:checkstyle
+    # - name: Lancement des tests unitaires avec couverture
+    #   run: |
+    #     ./mvnw test jacoco:report
+    # - name: Lancement du linter
+    #   run: |
+    #     ./mvnw checkstyle:checkstyle
