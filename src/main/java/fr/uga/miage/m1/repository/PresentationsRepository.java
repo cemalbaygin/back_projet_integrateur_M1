@@ -13,9 +13,9 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PresentationsRepository extends PagingAndSortingRepository<Presentation, Long>, JpaRepository<Presentation, Long>, JpaSpecificationExecutor<Presentation> {
+public interface PresentationsRepository extends JpaRepository<Presentation, Long>, JpaSpecificationExecutor<Presentation> {
 
-    Page<Presentation> findAll(Specification<Presentation> specification, Pageable pageable);
+    //Page<Presentation> findAll(Specification<Presentation> specification, Pageable pageable);
 
 
 }
