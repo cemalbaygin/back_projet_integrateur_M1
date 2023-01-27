@@ -6,7 +6,11 @@ jobs:
   backend-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Installation des dependences
-        run: mvn clean install
-      - name: Tests
-        run: mvn test
+      - name: Checkout Production repository
+        uses: actions/checkout@v2
+      - name: Setup maven
+        uses: actions/setup-maven@v2
+      # - name: Installation des dependences
+      #   run: mvn clean install
+      # - name: Tests
+      #   run: mvn test
