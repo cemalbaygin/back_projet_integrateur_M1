@@ -29,13 +29,13 @@ jobs:
 
     steps:
       - name: Premiere etape
-        run: echo 'premiere etape okkk'
-    # - name: Installation des dependences
-    #   run: |
-    #     ./mvnw clean install -DskipTests
-      - name: Lancement des tests unitaires avec couverture
-        run: |
-          ./mvnw test jacoco:report
-    # - name: Lancement du linter
-    #   run: |
-    #     ./mvnw checkstyle:checkstyle
+        run: echo "premiere etape okkk"
+      # - name: Installation des dependences
+      #   run: |
+      #     ./mvnw clean install -DskipTests
+      # - name: Lancement des tests unitaires avec couverture
+      #   run: |
+      #     ./mvnw test jacoco:report
+      # - name: Lancement du linter
+      #   run: |
+      #     ./mvnw checkstyle:checkstyle
