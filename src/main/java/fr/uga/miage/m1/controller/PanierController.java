@@ -6,7 +6,6 @@ import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.service.PanierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,13 +51,12 @@ public class PanierController {
         return new ResponseEntity<>(service.updateFromPanier(utilisateur, dto), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<List<PanierPresentationDTO>> substituerProduit(Authentication authentication,
-                                                                         @PathVariable("codeCIP13") String codeCIP13,
-                                                                         @Param("quantite") Integer quantite) {
+    @PostMapping("{codeCIP13}")
+    public ResponseEntity<Boolean> substituerProduit(Authentication authentication,
+                                                     @PathVariable("codeCIP13") String codeCIP13) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
 
-        return new ResponseEntity<>(service.substituerProduit(utilisateur, codeCIP13, quantite), HttpStatus.OK);
+        return new ResponseEntity<>(service.substituerProduit(utilisateur, codeCIP13), HttpStatus.OK);
     }
 
 }

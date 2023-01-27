@@ -10,6 +10,7 @@ import fr.uga.miage.m1.repository.CommandesPresentationRepository;
 import fr.uga.miage.m1.repository.CommandesRepository;
 import fr.uga.miage.m1.repository.PresentationsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Log
 public class PanierService {
     private final CommandesRepository commandeRepository;
     private final PresentationsRepository presentationsRepository;
@@ -84,16 +86,18 @@ public class PanierService {
         return getPanier(utilisateur);
     }
 
-    public List<PanierPresentationDTO> substituerProduit(Utilisateur utilisateur, String codeCIP13, Integer quantite) {
-        Commande commande = this.getOrCreatePanier(utilisateur);
+    public Boolean substituerProduit(Utilisateur utilisateur, String codeCIP13) {
+        Commande panier = this.getOrCreatePanier(utilisateur);
 
         Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
 
-        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), presentation.getCodeCIP13());
+        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(panier.getId(), presentation.getCodeCIP13());
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
 
+        Integer quantite = commandePresentation.getQuantite();
+
         List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
-        Optional<Presentation> presentationSubstitute = presentationMedicament.stream().filter(pres -> pres.getQuantiteStock() - quantite >= 0 && pres.getCodeCIP13() != Long.valueOf(codeCIP13)).findAny();
+        Optional<Presentation> presentationSubstitute = presentationMedicament.stream().filter(pres -> pres.getQuantiteStock() - quantite >= 0 && !pres.getCodeCIP13().equals(Long.valueOf(codeCIP13))).findAny();
 
         if (!presentationSubstitute.isPresent()) {
             List<Medicament> med = presentation.getMedicament()
@@ -105,13 +109,25 @@ public class PanierService {
                         p -> p.getCodeCIP13() != presentation.getCodeCIP13() && p.getQuantiteStock() - quantite >= 0
                 ).findAny();
 
-                if (presentationSubstitute.isPresent()) continue;
+                if (presentationSubstitute.isPresent()) break;
             }
         }
 
-        commandePresentation.setPresentation(presentationSubstitute.get());
-        commandesPresentationRepository.save(commandePresentation);
+        if (presentationSubstitute.isPresent()) {
+            commandesPresentationRepository.delete(commandePresentation);
 
-        return getPanier(utilisateur);
+            log.info(panier.getId() + "panier");
+            log.info(presentationSubstitute.get().getCodeCIP13() + "dest");
+            log.info(codeCIP13 + "source");
+
+            commandePresentationKey = new CommandePresentationKey(panier.getId(), presentationSubstitute.get().getCodeCIP13());
+            commandePresentation = new CommandePresentation();
+            commandePresentation.setId(commandePresentationKey);
+            commandePresentation.setQuantite(quantite);
+
+            commandesPresentationRepository.save(commandePresentation);
+        }
+
+        return presentationSubstitute.isPresent();
     }
 }

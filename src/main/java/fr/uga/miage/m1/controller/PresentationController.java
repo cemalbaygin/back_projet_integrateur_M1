@@ -9,9 +9,7 @@ import fr.uga.miage.m1.repository.PresentationsRepository;
 import fr.uga.miage.m1.service.PresentationService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,13 +35,13 @@ public class PresentationController {
         //Sort sort = Sort.by(sortBy.orElse("libelle")).descending();
         //Pageable pageable = PageRequest.of(page, size);
 
-        return presentationService.getPresentationsWithFilter(recherche,pageable);
+        return presentationService.getPresentationsWithFilter(recherche, pageable);
     }
 
-    /*@GetMapping("{codeCIP13}")
+    @GetMapping("{codeCIP13}")
     public PresentationCompleteDTO show(@PathVariable Long codeCIP13) {
         Presentation presentation = presentationRepo.findById(Long.valueOf(codeCIP13)).orElseThrow();
 
         return presentationMapper.entityToDto(presentation);
-    }*/
+    }
 }
