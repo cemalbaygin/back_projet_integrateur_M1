@@ -1,18 +1,14 @@
 package fr.uga.miage.m1.service;
 
 import fr.uga.miage.m1.entity.*;
-import fr.uga.miage.m1.model.dto.Normalizer;
 import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
-import fr.uga.miage.m1.model.dto.PresentationDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
-import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.model.mapper.PresentationMapper;
 import fr.uga.miage.m1.repository.PresentationsRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import oracle.ucp.proxy.annotation.Pre;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,16 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PresentationService {
     private final PresentationsRepository presentationRepo;
-    private final AutoMapper autoMapper;
     private final PresentationMapper presentationMapper;
 
-    private final EntityManager entityManager;
 
 
     public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {

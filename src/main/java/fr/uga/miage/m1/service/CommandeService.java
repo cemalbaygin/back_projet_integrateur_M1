@@ -7,9 +7,6 @@ import fr.uga.miage.m1.model.EtatCommande;
 import fr.uga.miage.m1.model.dto.CommandeCompleteDTO;
 import fr.uga.miage.m1.model.dto.CommandePresentationDTO;
 import fr.uga.miage.m1.model.mapper.AutoMapper;
-import fr.uga.miage.m1.repository.CommandesPresentationRepository;
-import fr.uga.miage.m1.repository.CommandesRepository;
-import fr.uga.miage.m1.repository.PresentationsRepository;
 import fr.uga.miage.m1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -22,11 +19,6 @@ import java.util.List;
 @Service
 @Log
 public class CommandeService {
-
-    private final CommandesRepository commandesRepository;
-    private final PresentationsRepository presentationsRepository;
-    private final CommandesPresentationRepository commandesPresentationRepository;
-    private final PanierService panierService;
 
     private final UserRepository userRepository;
 

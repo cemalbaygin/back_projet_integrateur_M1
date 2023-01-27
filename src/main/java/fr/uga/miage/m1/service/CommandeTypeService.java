@@ -3,7 +3,6 @@ package fr.uga.miage.m1.service;
 import fr.uga.miage.m1.entity.CommandeType;
 import fr.uga.miage.m1.entity.Etablissement;
 import fr.uga.miage.m1.entity.Utilisateur;
-import fr.uga.miage.m1.repository.EtablissementRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class CommandeTypeService {
-
-    private final EtablissementRepository etablissementRepository;
 
     public List<CommandeType> getListCommandeType(Utilisateur utilisateur){
 

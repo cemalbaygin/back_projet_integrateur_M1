@@ -1,7 +1,6 @@
 package fr.uga.miage.m1.config;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExecutionChain;
