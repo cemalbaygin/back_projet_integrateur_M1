@@ -14,8 +14,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
 
 @Service
 public class JwtService {

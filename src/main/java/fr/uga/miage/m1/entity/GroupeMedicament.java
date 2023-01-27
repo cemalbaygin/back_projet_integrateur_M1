@@ -1,6 +1,5 @@
 package fr.uga.miage.m1.entity;
 
-import fr.uga.miage.m1.model.dto.MedicamentDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NonNull;
