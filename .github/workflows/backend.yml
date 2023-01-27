@@ -1,0 +1,48 @@
+name: backend-integrator-projet CI
+
+on:
+  push:
+    branches:
+      - "master"
+      - "develop"
+    paths:
+      - "src/main/java/fr/uga/miage/m1/controller"
+      - "src/main/java/fr/uga/miage/m1/entity"
+      - "src/main/java/fr/uga/miage/m1/model/mapper"
+      - "src/main/java/fr/uga/miage/m1/model/dto"
+      - "src/main/java/fr/uga/miage/m1/model/service"
+    pull_request:
+      branches: 
+      - "master"
+      - "develop"
+      paths:
+      - "src/main/java/fr/uga/miage/m1/controller"
+      - "src/main/java/fr/uga/miage/m1/entity"
+      - "src/main/java/fr/uga/miage/m1/model/mapper"
+      - "src/main/java/fr/uga/miage/m1/model/dto"
+      - "src/main/java/fr/uga/miage/m1/model/service"
+    workflow_dispatch:
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Tests unitaires avec coverage
+        run: mvn test:coverage
+      - name: Test du linter
+        run: yarn lint
+
+            runs-on: ubuntu-latest
+
+    steps:
+    - name: Installation des dependences
+      run: |
+        ./mvnw clean install -DskipTests
+
+    - name: Lancement des tests unitaires avec couverture
+      run: |
+        ./mvnw test jacoco:report
+    - name: Lancement du linter
+      run: |
+        ./mvnw checkstyle:checkstyle
