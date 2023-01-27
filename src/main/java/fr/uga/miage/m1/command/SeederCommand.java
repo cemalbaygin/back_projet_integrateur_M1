@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,14 +48,14 @@ public class SeederCommand implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Import start");
 
-        //importMedicament();
-        //importGroupeMedicament();
+        importMedicament();
+        importGroupeMedicament();
 
-        //importComposition();
+        importComposition();
 
-        //importPresentation();
+        importPresentation();
 
-        //importPrescription();
+        importPrescription();
 
         logger.info("Import end");
     }
