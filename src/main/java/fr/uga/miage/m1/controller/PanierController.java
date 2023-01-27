@@ -59,4 +59,12 @@ public class PanierController {
         return new ResponseEntity<>(service.substituerProduit(utilisateur, codeCIP13), HttpStatus.OK);
     }
 
+    @PostMapping("/valider")
+    public ResponseEntity<Boolean> passerCommande(Authentication authentication) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+
+        return new ResponseEntity<>(service.passerCommande(utilisateur), HttpStatus.OK);
+    }
+
+
 }

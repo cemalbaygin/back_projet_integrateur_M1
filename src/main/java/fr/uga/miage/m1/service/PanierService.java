@@ -12,9 +12,12 @@ import fr.uga.miage.m1.repository.PresentationsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -129,5 +132,33 @@ public class PanierService {
         }
 
         return presentationSubstitute.isPresent();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean passerCommande(Utilisateur user) {
+        Commande panier = getOrCreatePanier(user);
+        panier.setEtat(EtatCommande.expedier);
+        
+        List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
+        if (commandePresentations.size() == 0) throw new NoSuchElementException();
+
+        for (int i = 0; i < commandePresentations.size(); i++) {
+            CommandePresentation comPres = commandePresentations.get(i);
+            Presentation pres = comPres.getPresentation();
+
+            comPres.setEtat(EtatCommande.en_cours);
+
+            if (pres.getQuantiteStock() >= comPres.getQuantite()) {
+                pres.setQuantiteStock(pres.getQuantiteStock() - comPres.getQuantite());
+                comPres.setEtat(EtatCommande.expedier);
+                presentationsRepository.save(pres);
+            } else {
+                panier.setEtat(EtatCommande.en_cours);
+            }
+
+            commandesPresentationRepository.save(comPres);
+        }
+
+        return true;
     }
 }
