@@ -33,10 +33,9 @@ jobs:
     # - name: Installation des dependences
     #   run: |
     #     ./mvnw clean install -DskipTests
-
-    # - name: Lancement des tests unitaires avec couverture
-    #   run: |
-    #     ./mvnw test jacoco:report
+      - name: Lancement des tests unitaires avec couverture
+        run: |
+          ./mvnw test jacoco:report
     # - name: Lancement du linter
     #   run: |
     #     ./mvnw checkstyle:checkstyle
