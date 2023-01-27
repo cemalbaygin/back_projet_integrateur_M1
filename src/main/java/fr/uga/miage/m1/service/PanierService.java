@@ -36,8 +36,9 @@ public class PanierService {
             commande.setEtat(EtatCommande.panier);
             commande.setUtilisateur(utilisateur);
             commande.setDateAchat(new Timestamp(System.currentTimeMillis()));
-            commande = commandeRepository.save(commande);
+            commande = commandeRepository.saveAndFlush(commande);
         }
+
         return commande;
     }
 
@@ -136,9 +137,9 @@ public class PanierService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean passerCommande(Utilisateur user) {
-        Commande panier = getOrCreatePanier(user);
+        Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
         panier.setEtat(EtatCommande.expedier);
-        
+
         List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
         if (commandePresentations.size() == 0) throw new NoSuchElementException();
 
@@ -147,6 +148,7 @@ public class PanierService {
             Presentation pres = comPres.getPresentation();
 
             comPres.setEtat(EtatCommande.en_cours);
+            comPres.setPrixAchat(pres.getPrix());
 
             if (pres.getQuantiteStock() >= comPres.getQuantite()) {
                 pres.setQuantiteStock(pres.getQuantiteStock() - comPres.getQuantite());
