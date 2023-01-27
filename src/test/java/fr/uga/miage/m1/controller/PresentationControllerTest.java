@@ -1,19 +1,12 @@
 package fr.uga.miage.m1.controller;
 
-import fr.uga.miage.m1.config.ApplicationConfig;
 import fr.uga.miage.m1.config.JwtAuthenticationFilter;
-import fr.uga.miage.m1.config.JwtService;
 import fr.uga.miage.m1.config.SecurityConfiguration;
-import fr.uga.miage.m1.entity.Presentation;
-import fr.uga.miage.m1.model.dto.MedicamentDTO;
-import fr.uga.miage.m1.model.dto.Normalizer;
-import fr.uga.miage.m1.model.dto.PresentationDTO;
-import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
+import fr.uga.miage.m1.model.dto.*;
 import fr.uga.miage.m1.service.PresentationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,7 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -37,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -164,6 +155,50 @@ public class PresentationControllerTest {
                 .andExpect(jsonPath("$.content[2].presentation.codeCIP13").value(6784443L));
 
 
+    }
+
+    @Test
+    void getPresentationByCIP13() throws Exception {
+
+        ExcipientDTO excipientDTO1 = new ExcipientDTO();
+        excipientDTO1.setLibelle("excip1");
+        excipientDTO1.setDosage("300 mg");
+
+        ExcipientDTO excipientDTO2 = new ExcipientDTO();
+        excipientDTO2.setLibelle("excip2");
+        excipientDTO2.setDosage("250 mg");
+
+        PrincipeActifDTO principeActifDTO = new PrincipeActifDTO();
+        principeActifDTO.setDosage("300 mg");
+        principeActifDTO.setLibelle("principe1");
+
+        GroupeMedicamentDTO groupeMedicamentDTO = new GroupeMedicamentDTO();
+        groupeMedicamentDTO.setLibelle("gpMedicament1");
+        groupeMedicamentDTO.setPresentationsMedicaments(Arrays.asList(dto1, dto2, dto3));
+        groupeMedicamentDTO.setPrincipesActifs(Arrays.asList(principeActifDTO));
+
+        PrescriptionDTO prescriptionDTO = new PrescriptionDTO();
+        prescriptionDTO.setLibelle("prescrip1");
+
+        PresentationCompleteDTO presentationCompleteDTO = new PresentationCompleteDTO();
+        presentationCompleteDTO.setPresentations(Arrays.asList(presentationDto1));
+        presentationCompleteDTO.setMedicament(medicamentDto1);
+        presentationCompleteDTO.setExcipients(Arrays.asList(excipientDTO1,excipientDTO2));
+        presentationCompleteDTO.setPrescriptions(Arrays.asList(prescriptionDTO));
+        presentationCompleteDTO.setGroupeMedicament(groupeMedicamentDTO);
+
+
+        when(presentationService.getPresentation(1234443l)).thenReturn(presentationCompleteDTO);
+
+        doGetPageWithParams(PRESENTATION_PATH+"/1234443",
+                Optional.empty(),
+                Optional.empty())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.presentations").isNotEmpty())
+                .andExpect(jsonPath("$.presentations[0].codeCIP13").value(1234443L))
+                .andExpect(jsonPath("$.presentations[0].libelle").value("plaquette(s) aluminium de 28 comprimé(s)"))
+                .andExpect(jsonPath("$.medicament.codeCIS").value(64776881l))
+                .andExpect(jsonPath("$.medicament.libelle").value("ACICLOVIR EG 800 mg, comprimé"));
     }
 
     private ResultActions doGetPageWithParams( String path,
