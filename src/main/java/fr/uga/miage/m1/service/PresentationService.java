@@ -1,16 +1,14 @@
 package fr.uga.miage.m1.service;
 
 import fr.uga.miage.m1.entity.*;
-import fr.uga.miage.m1.model.dto.Normalizer;
-import fr.uga.miage.m1.model.dto.PresentationDTO;
-import fr.uga.miage.m1.model.mapper.AutoMapper;
+import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
+import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.mapper.PresentationMapper;
 import fr.uga.miage.m1.repository.PresentationsRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-import oracle.ucp.proxy.annotation.Pre;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,44 +16,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PresentationService {
     private final PresentationsRepository presentationRepo;
-    private final AutoMapper autoMapper;
     private final PresentationMapper presentationMapper;
 
-    private final EntityManager entityManager;
 
 
-    public Normalizer getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
-        Page<Presentation> presentations;
-
-        /*if(recherche.isPresent()){
-            Specification<Presentation> specification = hasPrincipeActifLibelle(recherche.get());
-            //specification = specification.or(hasMedicamentLibelle(recherche.get()));
-            //specification = specification.or(hasPrincipeActifLibelle(recherche.get()));
-
-            presentations = presentationRepo.findAll(specification,paging);
-        }
-        else{
-            presentations = presentationRepo.findAll(paging);
-        }*/
+    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
 
         Specification<Presentation> specification = buildSpecifications(recherche);
-        System.out.println("ouiAvant1");
-        presentations = presentationRepo.findAll(specification,paging);
-        System.out.println("oui1");
-        List<Presentation> res = presentations.getContent();
-        System.out.println("oui2");
-        List<PresentationDTO> collect = res.stream().map(e -> autoMapper.entityToDto(e)).collect(Collectors.toList());
-        System.out.println("oui3");
-        return new Normalizer(collect, presentations);
 
+        Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
+        return presentations.map(this.presentationMapper::presentationMedicamentDTO);
+    }
+
+    public PresentationCompleteDTO getPresentation(Long codeCIP13) throws NoSuchElementException{
+        return presentationMapper.entityToDto(presentationRepo.findById(Long.valueOf(codeCIP13))
+                .orElseThrow(() -> new NoSuchElementException("Presentation not found with codeCIP13 : "+codeCIP13)));
     }
 
     static Specification<Presentation> hasLibelle(String libelle) {

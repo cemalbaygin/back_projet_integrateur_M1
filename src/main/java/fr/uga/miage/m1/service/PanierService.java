@@ -1,40 +1,44 @@
 package fr.uga.miage.m1.service;
 
-import fr.uga.miage.m1.entity.Commande;
-import fr.uga.miage.m1.entity.CommandePresentation;
-import fr.uga.miage.m1.entity.Presentation;
-import fr.uga.miage.m1.entity.Utilisateur;
+import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.EtatCommande;
-import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import fr.uga.miage.m1.model.dto.PanierPresentationDTO;
+import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import fr.uga.miage.m1.model.mapper.CommandeMapper;
 import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.repository.CommandesPresentationRepository;
 import fr.uga.miage.m1.repository.CommandesRepository;
 import fr.uga.miage.m1.repository.PresentationsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Log
 public class PanierService {
     private final CommandesRepository commandeRepository;
     private final PresentationsRepository presentationsRepository;
     private final CommandesPresentationRepository commandesPresentationRepository;
     private final CommandeMapper commandeMapper;
 
-    private Commande getOrCreatePanier(Utilisateur utilisateur) {
+    public Commande getOrCreatePanier(Utilisateur utilisateur) {
         Commande commande = commandeRepository.getPanier(utilisateur.getId()).orElse(null);
         if (commande == null) {
             commande = new Commande();
             commande.setEtat(EtatCommande.panier);
             commande.setUtilisateur(utilisateur);
             commande.setDateAchat(new Timestamp(System.currentTimeMillis()));
-            commande = commandeRepository.save(commande);
+            commande = commandeRepository.saveAndFlush(commande);
         }
+
         return commande;
     }
 
@@ -84,5 +88,79 @@ public class PanierService {
         commandesPresentationRepository.delete(commandePresentation);
 
         return getPanier(utilisateur);
+    }
+
+    public Boolean substituerProduit(Utilisateur utilisateur, String codeCIP13) {
+        Commande panier = this.getOrCreatePanier(utilisateur);
+
+        Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
+
+        CommandePresentationKey commandePresentationKey = new CommandePresentationKey(panier.getId(), presentation.getCodeCIP13());
+        CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
+
+        Integer quantite = commandePresentation.getQuantite();
+
+        List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
+        Optional<Presentation> presentationSubstitute = presentationMedicament.stream().filter(pres -> pres.getQuantiteStock() - quantite >= 0 && !pres.getCodeCIP13().equals(Long.valueOf(codeCIP13))).findAny();
+
+        if (!presentationSubstitute.isPresent()) {
+            List<Medicament> med = presentation.getMedicament()
+                    .getGroupeMedicament()
+                    .getMedicaments();
+
+            for (int i = 0; i < med.size(); i++) {
+                presentationSubstitute = med.get(i).getPresentations().stream().filter(
+                        p -> p.getCodeCIP13() != presentation.getCodeCIP13() && p.getQuantiteStock() - quantite >= 0
+                ).findAny();
+
+                if (presentationSubstitute.isPresent()) break;
+            }
+        }
+
+        if (presentationSubstitute.isPresent()) {
+            commandesPresentationRepository.delete(commandePresentation);
+
+            log.info(panier.getId() + "panier");
+            log.info(presentationSubstitute.get().getCodeCIP13() + "dest");
+            log.info(codeCIP13 + "source");
+
+            commandePresentationKey = new CommandePresentationKey(panier.getId(), presentationSubstitute.get().getCodeCIP13());
+            commandePresentation = new CommandePresentation();
+            commandePresentation.setId(commandePresentationKey);
+            commandePresentation.setQuantite(quantite);
+
+            commandesPresentationRepository.save(commandePresentation);
+        }
+
+        return presentationSubstitute.isPresent();
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public boolean passerCommande(Utilisateur user) {
+        Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
+        panier.setEtat(EtatCommande.expedier);
+
+        List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
+        if (commandePresentations.size() == 0) throw new NoSuchElementException();
+
+        for (int i = 0; i < commandePresentations.size(); i++) {
+            CommandePresentation comPres = commandePresentations.get(i);
+            Presentation pres = comPres.getPresentation();
+
+            comPres.setEtat(EtatCommande.en_cours);
+            comPres.setPrixAchat(pres.getPrix());
+
+            if (pres.getQuantiteStock() >= comPres.getQuantite()) {
+                pres.setQuantiteStock(pres.getQuantiteStock() - comPres.getQuantite());
+                comPres.setEtat(EtatCommande.expedier);
+                presentationsRepository.save(pres);
+            } else {
+                panier.setEtat(EtatCommande.en_cours);
+            }
+
+            commandesPresentationRepository.save(comPres);
+        }
+
+        return true;
     }
 }

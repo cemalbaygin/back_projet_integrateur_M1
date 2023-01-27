@@ -16,6 +16,7 @@ public interface PresentationMapper {
     AutoMapper autoMapper = Mappers.getMapper(AutoMapper.class);
 
 
+
     default PresentationMedicamentDTO presentationMedicamentDTO(Presentation entity) {
         PresentationMedicamentDTO dto = new PresentationMedicamentDTO();
 
@@ -32,7 +33,7 @@ public interface PresentationMapper {
                 medicament
                         .getPresentations()
                         .stream().map(pres -> autoMapper.entityToDto(pres))
-                        .collect(Collectors.toList())
+                        .toList()
         );
 
         dto.setMedicament(autoMapper.entityToDto(medicament));
@@ -44,7 +45,7 @@ public interface PresentationMapper {
                             dtoExcipient.setLibelle(medicamentExcipient.getExcipient().getLibelle());
                             return dtoExcipient;
                         }
-                ).collect(Collectors.toList())
+                ).toList()
         );
 
         GroupeMedicamentDTO groupeMedicamentDTO = new GroupeMedicamentDTO();
@@ -57,7 +58,7 @@ public interface PresentationMapper {
                     principeActifDTO.setDosage(assoc.getDosage());
                     principeActifDTO.setLibelle(assoc.getPrincipeActif().getLibelle());
                     return principeActifDTO;
-                }).collect(Collectors.toList()));
+                }).toList());
 
 
         List<Presentation> presMed = groupe.getMedicaments().stream().map(med -> med.getPresentations().stream().findFirst()).flatMap(Optional::stream).collect(Collectors.toList());

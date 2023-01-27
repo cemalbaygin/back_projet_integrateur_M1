@@ -1,7 +1,6 @@
 package fr.uga.miage.m1.service;
 
-import fr.uga.miage.m1.auth.AuthenticationRequest;
-import fr.uga.miage.m1.auth.AuthenticationService;
+
 import fr.uga.miage.m1.entity.Utilisateur;
 import fr.uga.miage.m1.model.dto.ProfilPostDTO;
 import fr.uga.miage.m1.model.dto.UtilisateurDTO;
@@ -14,12 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Collection;
 
 @RequiredArgsConstructor
 @Service
@@ -27,13 +23,9 @@ import java.util.Collection;
 public class UserService {
 
     private final UserRepository userRepo;
-
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final AutoMapper mapper;
-
-
-
 
     public ResponseEntity<UtilisateurDTO> changeMdp(Authentication authentication, ProfilPostDTO profil){
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();

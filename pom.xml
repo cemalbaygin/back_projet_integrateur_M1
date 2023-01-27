@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -10,7 +11,7 @@
     </parent>
     <groupId>fr.uga.miage.m1</groupId>
     <artifactId>projet_integrateur_g9</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>premier_iter</version>
     <name>projet_integrateur_back</name>
     <description>Demo project for Spring Boot</description>
     <properties>
@@ -18,6 +19,7 @@
         <sonar.host.url>http://im2ag-sonar.u-ga.fr:9000</sonar.host.url>
         <!--suppress UnresolvedMavenProperty -->
         <sonar.login>${user.token}</sonar.login>
+        <start-class>fr.uga.miage.m1.GroMedApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -27,6 +29,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>com.oracle.ojdbc</groupId>
@@ -44,14 +50,11 @@
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -94,6 +97,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
@@ -112,6 +120,10 @@
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
 
     </dependencies>
 
@@ -128,6 +140,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <mainClass>fr.uga.miage.m1.GroMedApplication</mainClass>
                     <profiles>
                         <profile>dev</profile>
                     </profiles>
@@ -186,6 +199,7 @@
                             -Amapstruct.defaultComponentModel=spring
                         </compilerArg>
                     </compilerArgs>
+
                 </configuration>
             </plugin>
 

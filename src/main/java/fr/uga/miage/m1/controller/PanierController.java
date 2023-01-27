@@ -51,4 +51,20 @@ public class PanierController {
         return new ResponseEntity<>(service.updateFromPanier(utilisateur, dto), HttpStatus.OK);
     }
 
+    @PostMapping("{codeCIP13}")
+    public ResponseEntity<Boolean> substituerProduit(Authentication authentication,
+                                                     @PathVariable("codeCIP13") String codeCIP13) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+
+        return new ResponseEntity<>(service.substituerProduit(utilisateur, codeCIP13), HttpStatus.OK);
+    }
+
+    @PostMapping("/valider")
+    public ResponseEntity<Boolean> passerCommande(Authentication authentication) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+
+        return new ResponseEntity<>(service.passerCommande(utilisateur), HttpStatus.OK);
+    }
+
+
 }
