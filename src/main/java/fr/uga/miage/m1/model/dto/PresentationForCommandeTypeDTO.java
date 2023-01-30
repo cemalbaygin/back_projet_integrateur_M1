@@ -4,15 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
-public class CommandeTypeDTO {
-
+public class PresentationForCommandeTypeDTO {
+    private Long codeCIP13;
     private String libelle;
-
-    private List<PresentationForCommandeTypeDTO> presentations;
-    
+    private Integer quantite;
 }

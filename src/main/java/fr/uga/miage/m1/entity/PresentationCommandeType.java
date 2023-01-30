@@ -21,7 +21,6 @@ public class PresentationCommandeType {
     @MapsId("commandeType_id")
     @JoinColumn(name = "commandeType_id", referencedColumnName = "id")
     private CommandeType commandeType;
-
     @ManyToOne
     @MapsId("presentation_id")
     @JoinColumn(name = "presentation_id", referencedColumnName = "codeCIP13")
