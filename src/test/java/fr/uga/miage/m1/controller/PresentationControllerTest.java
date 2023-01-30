@@ -66,12 +66,6 @@ public class PresentationControllerTest {
 
 
 
-    /**
-     * Test que la route /api/public/presentations renvoie la liste des présentations présents dans la bdd
-     * @see PresentationController#index(Optional, Pageable)
-     */
-
-
     @BeforeEach
     void before(){
 
@@ -135,6 +129,10 @@ public class PresentationControllerTest {
 
     }
 
+    /**
+     * Test que la route /api/public/presentations renvoie la liste des présentations présents dans la bdd
+     * @see PresentationController#index(Optional, Pageable)
+     */
     @Test
     void getAllPresentations() throws Exception {
         final Pageable pageable = PageRequest.of(0,3);
@@ -156,6 +154,10 @@ public class PresentationControllerTest {
 
     }
 
+    /**
+     * Test que la route /api/public/presentations renvoie la liste des présentations présents dans la bdd
+     * @see PresentationController#show(Long) 
+     */
     @Test
     void getPresentationByCIP13() throws Exception {
 
