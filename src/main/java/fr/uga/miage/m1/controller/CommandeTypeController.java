@@ -1,6 +1,5 @@
 package fr.uga.miage.m1.controller;
 
-import fr.uga.miage.m1.entity.CommandeType;
 import fr.uga.miage.m1.entity.Utilisateur;
 import fr.uga.miage.m1.model.dto.CommandeTypeDTO;
 import fr.uga.miage.m1.model.mapper.AutoMapper;
@@ -14,12 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/public/CommandeType")
+@RequestMapping("/private/commandetype")
 @Tag(name = "CommandeType")
 public class CommandeTypeController {
 
@@ -30,11 +28,9 @@ public class CommandeTypeController {
     @GetMapping
     public ResponseEntity<List<CommandeTypeDTO>> getCommandeType(Authentication authentication) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
-        List<CommandeType> commandeTypes = commandeTypeService.getListCommandeType(utilisateur);
-        List<CommandeTypeDTO> commandeTypeDTOS = new ArrayList<>();
-        for (CommandeType c : commandeTypes) {
-            commandeTypeDTOS.add(mapper.entityTdto(c));
-        }
+
+        List<CommandeTypeDTO> commandeTypeDTOS = commandeTypeService.getListCommandeType(utilisateur);
+
         return new ResponseEntity<>(commandeTypeDTOS, HttpStatus.OK);
     }
 }
