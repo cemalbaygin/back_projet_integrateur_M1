@@ -15,7 +15,7 @@ public class Prescription {
     private Long id;
 
     @NonNull
-    @Column(length = 512)
+    @Column(length = 512, unique = true)
     private String libelle;
 
 }

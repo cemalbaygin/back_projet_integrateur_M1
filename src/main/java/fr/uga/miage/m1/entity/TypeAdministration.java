@@ -16,7 +16,7 @@ public class TypeAdministration {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(length = 255)
+    @Column(length = 255, unique = true)
     @NonNull
     private String libelle;
 

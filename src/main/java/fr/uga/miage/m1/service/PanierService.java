@@ -3,8 +3,10 @@ package fr.uga.miage.m1.service;
 import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.EtatCommande;
 import fr.uga.miage.m1.model.dto.PanierPresentationDTO;
+import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.key.CommandePresentationKey;
 import fr.uga.miage.m1.model.mapper.CommandeMapper;
+import fr.uga.miage.m1.model.mapper.PresentationMapper;
 import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.repository.CommandesPresentationRepository;
 import fr.uga.miage.m1.repository.CommandesRepository;
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +30,8 @@ public class PanierService {
     private final PresentationsRepository presentationsRepository;
     private final CommandesPresentationRepository commandesPresentationRepository;
     private final CommandeMapper commandeMapper;
+    private final PresentationMapper presentationMapper;
+    private final CommandeService commandeService;
 
     public Commande getOrCreatePanier(Utilisateur utilisateur) {
         Commande commande = commandeRepository.getPanier(utilisateur.getId()).orElse(null);
@@ -90,76 +94,72 @@ public class PanierService {
         return getPanier(utilisateur);
     }
 
-    public Boolean substituerProduit(Utilisateur utilisateur, String codeCIP13) {
+    public List<PresentationMedicamentDTO> getSimilaires(String codeCIP13) {
+        Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
+
+        List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
+
+        List<Medicament> meds = presentation.getMedicament()
+                .getGroupeMedicament()
+                .getMedicaments();
+
+        for (Medicament m : meds) {
+            presentationMedicament.addAll(m.getPresentations());
+        }
+
+        return presentationMedicament.stream().map(m -> presentationMapper.presentationMedicamentDTO(m)).collect(Collectors.toList());
+    }
+
+    public Boolean substituerProduit(Utilisateur utilisateur, String sourceCodeCIP13, String destinationCodeCIP13) {
         Commande panier = this.getOrCreatePanier(utilisateur);
 
-        Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
+        Presentation presentation = presentationsRepository.findById(Long.valueOf(sourceCodeCIP13)).orElseThrow();
 
         CommandePresentationKey commandePresentationKey = new CommandePresentationKey(panier.getId(), presentation.getCodeCIP13());
         CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElseThrow();
 
         Integer quantite = commandePresentation.getQuantite();
 
-        List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
-        Optional<Presentation> presentationSubstitute = presentationMedicament.stream().filter(pres -> pres.getQuantiteStock() - quantite >= 0 && !pres.getCodeCIP13().equals(Long.valueOf(codeCIP13))).findAny();
+        commandesPresentationRepository.delete(commandePresentation);
 
-        if (!presentationSubstitute.isPresent()) {
-            List<Medicament> med = presentation.getMedicament()
-                    .getGroupeMedicament()
-                    .getMedicaments();
+        commandePresentationKey = new CommandePresentationKey(panier.getId(), Long.valueOf(destinationCodeCIP13));
+        commandePresentation = new CommandePresentation();
+        commandePresentation.setId(commandePresentationKey);
+        commandePresentation.setQuantite(quantite);
 
-            for (int i = 0; i < med.size(); i++) {
-                presentationSubstitute = med.get(i).getPresentations().stream().filter(
-                        p -> p.getCodeCIP13() != presentation.getCodeCIP13() && p.getQuantiteStock() - quantite >= 0
-                ).findAny();
+        commandesPresentationRepository.save(commandePresentation);
 
-                if (presentationSubstitute.isPresent()) break;
-            }
-        }
-
-        if (presentationSubstitute.isPresent()) {
-            commandesPresentationRepository.delete(commandePresentation);
-
-            log.info(panier.getId() + "panier");
-            log.info(presentationSubstitute.get().getCodeCIP13() + "dest");
-            log.info(codeCIP13 + "source");
-
-            commandePresentationKey = new CommandePresentationKey(panier.getId(), presentationSubstitute.get().getCodeCIP13());
-            commandePresentation = new CommandePresentation();
-            commandePresentation.setId(commandePresentationKey);
-            commandePresentation.setQuantite(quantite);
-
-            commandesPresentationRepository.save(commandePresentation);
-        }
-
-        return presentationSubstitute.isPresent();
+        return true;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean passerCommande(Utilisateur user) {
-        Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
-        panier.setEtat(EtatCommande.expedier);
 
+        Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
         List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
         if (commandePresentations.size() == 0) throw new NoSuchElementException();
 
+        panier.setEtat(EtatCommande.attente_paiement);
+        panier.setDateAchat(new Timestamp(System.currentTimeMillis()));
+
         for (int i = 0; i < commandePresentations.size(); i++) {
+
             CommandePresentation comPres = commandePresentations.get(i);
             Presentation pres = comPres.getPresentation();
 
-            comPres.setEtat(EtatCommande.en_cours);
+            comPres.setEtat(EtatCommande.attente_paiement);
             comPres.setPrixAchat(pres.getPrix());
 
             if (pres.getQuantiteStock() >= comPres.getQuantite()) {
                 pres.setQuantiteStock(pres.getQuantiteStock() - comPres.getQuantite());
-                comPres.setEtat(EtatCommande.expedier);
+                comPres.setEtat(EtatCommande.attente_paiement_reserver);
                 presentationsRepository.save(pres);
-            } else {
-                panier.setEtat(EtatCommande.en_cours);
             }
 
             commandesPresentationRepository.save(comPres);
         }
+
+        commandeRepository.save(panier);
 
         return true;
     }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 //@Component
+//@Log
 public class SeederCommand implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(SeederCommand.class);
 
@@ -47,20 +48,22 @@ public class SeederCommand implements CommandLineRunner {
     public void run(String... args) throws Exception {
         logger.info("Import start");
 
-        importMedicament();
-        importGroupeMedicament();
+        // importMedicament();
+        // importGroupeMedicament();
+        // ne pas oublier
+        // create sequence groupe_medicament_seq start with 2000 increment by 50;
 
-        importComposition();
+        // importComposition();
 
-        importPresentation();
+        //  importPresentation();
 
-        importPrescription();
+        // importPrescription();
 
         logger.info("Import end");
     }
 
     private void importPrescription() throws IOException {
-        logger.info("Import presentations");
+        logger.info("Import prescription");
 
         InputStream is = SeederCommand.class.getClassLoader().getResourceAsStream("dataBrut/CIS_CPD_bdpm.txt");
         InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.ISO_8859_1);
@@ -228,8 +231,6 @@ public class SeederCommand implements CommandLineRunner {
 
         }
 
-        logger.info("Import end");
-
     }
 
     private void importMedicament() throws IOException {
@@ -259,13 +260,17 @@ public class SeederCommand implements CommandLineRunner {
             String[] titulaires = columns[colTitulaires].split(";");
             List<Fabricant> fabricants = new ArrayList<>();
             for (String titulaire : titulaires) {
-                if (!fabricantsRepository.existsByLibelle(titulaire)) {
+                Optional<Fabricant> f = fabricantsRepository.getByLibelle(titulaire.trim());
+                if (!f.isPresent()) {
                     Fabricant fabricant = new Fabricant();
                     fabricant.setLibelle(titulaire.trim());
                     fabricantsRepository.save(fabricant);
+                    fabricants.add(fabricant);
+
+                } else {
+                    fabricants.add(f.get());
                 }
 
-                fabricants.add(fabricantsRepository.getByLibelle(titulaire));
             }
             String[] voiesAdministration = columns[colVoiesAdmin].split(";");
 
@@ -318,9 +323,10 @@ public class SeederCommand implements CommandLineRunner {
             String[] columns = line.split("\t");
             Long idGroupeMedicament = Long.parseLong(columns[colIdGroupeMedicament]);
 
-            if (!groupeMedicamentsRepository.existsById(idGroupeMedicament)) {
+            if (idGroupeMedicament != 0 && !groupeMedicamentsRepository.existsById(idGroupeMedicament)) {
                 GroupeMedicament groupeMedicament = new GroupeMedicament();
                 groupeMedicament.setLibelle(columns[colLabelGroupeMedicament]);
+                groupeMedicament.setId(idGroupeMedicament);
                 groupeMedicamentsRepository.save(groupeMedicament);
             }
 

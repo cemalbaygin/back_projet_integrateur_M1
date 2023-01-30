@@ -16,7 +16,7 @@ public class Fabricant {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(length = 512)
+    @Column(length = 512, unique = true)
     @NonNull
     private String libelle;
 
