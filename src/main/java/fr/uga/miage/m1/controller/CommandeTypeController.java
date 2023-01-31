@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,9 +29,13 @@ public class CommandeTypeController {
     @GetMapping
     public ResponseEntity<List<CommandeTypeDTO>> getCommandeType(Authentication authentication) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+        try{
+            List<CommandeTypeDTO> commandeTypeDTOS = commandeTypeService.getListCommandeType(utilisateur);
+            return new ResponseEntity<>(commandeTypeDTOS, HttpStatus.OK);
 
-        List<CommandeTypeDTO> commandeTypeDTOS = commandeTypeService.getListCommandeType(utilisateur);
-
-        return new ResponseEntity<>(commandeTypeDTOS, HttpStatus.OK);
+        }catch(NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
 }
