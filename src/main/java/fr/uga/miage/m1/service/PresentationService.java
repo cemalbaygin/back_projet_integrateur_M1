@@ -27,9 +27,9 @@ public class PresentationService {
 
 
 
-    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Optional<Boolean> estReference, Pageable paging) {
+    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Optional<Boolean> estReference,Optional<Boolean> estEnStock ,Pageable paging) {
 
-        Specification<Presentation> specification = buildSpecifications(recherche,estReference);
+        Specification<Presentation> specification = buildSpecifications(recherche,estReference,estEnStock);
 
         Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
@@ -64,7 +64,7 @@ public class PresentationService {
     }
 
 
-    private Specification<Presentation> buildSpecifications(Optional<String> rechercheFilter, Optional<Boolean> estReferenceFilter){
+    private Specification<Presentation> buildSpecifications(Optional<String> rechercheFilter, Optional<Boolean> estReferenceFilter, Optional<Boolean> estEnStockFilter){
 
         return (presentationRoot, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -96,6 +96,15 @@ public class PresentationService {
                 predicates.add(predicate1);
             });
 
+            estEnStockFilter.ifPresent( estEnStock -> {
+                Predicate predicate1;
+                if(estEnStock){
+                    predicate1 = criteriaBuilder.gt(presentationRoot.get(Presentation_.QUANTITE_STOCK), 0);
+                }else{
+                    predicate1 = criteriaBuilder.le(presentationRoot.get(Presentation_.QUANTITE_STOCK), 0);
+                }
+                predicates.add(predicate1);
+            });
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         };
     }
