@@ -74,5 +74,12 @@ public class PanierController {
         return new ResponseEntity<>(service.passerCommande(utilisateur), HttpStatus.OK);
     }
 
+    @PostMapping("/allPresentations")
+    public ResponseEntity<Boolean> addAllToPanier(Authentication authentication,
+                                               @RequestBody List<AjouterAuPanierDTO> dto) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+        return new ResponseEntity<>(service.addPresentationsToPanier(utilisateur, dto), HttpStatus.OK);
+    }
+
 
 }

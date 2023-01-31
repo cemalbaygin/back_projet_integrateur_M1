@@ -10,5 +10,6 @@ import lombok.Setter;
 public class PresentationForCommandeTypeDTO {
     private Long codeCIP13;
     private String libelle;
+    private String libelleMedicament;
     private Integer quantite;
 }
