@@ -23,12 +23,13 @@ public class PresentationController {
     private final PresentationService presentationService;
 
     @GetMapping
-    public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestParam("search") Optional<String> recherche,
+    public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestParam("nom") Optional<String> nomMedicament,
+                                                                 @RequestParam("principeActif") Optional<String> principeActif,
                                                                  @RequestParam("estReference") Optional<Boolean> estReference,
                                                                  @RequestParam("estEnStock") Optional<Boolean> estEnStock,
                                                                  @ParameterObject @PageableDefault Pageable pageable) {
 
-        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(recherche, estReference,estEnStock, pageable);
+        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(nomMedicament,principeActif , estReference,estEnStock, pageable);
 
         return new ResponseEntity<>(presentations, HttpStatus.OK);
     }

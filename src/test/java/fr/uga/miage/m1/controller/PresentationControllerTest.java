@@ -140,7 +140,7 @@ public class PresentationControllerTest {
 
         presentationDtos = new PageImpl<PresentationMedicamentDTO>(list,pageable, list.size());
 
-        when(presentationService.getPresentationsWithFilter(any(),any(), any(),any())).thenReturn(presentationDtos);
+        when(presentationService.getPresentationsWithFilter(any(),any(), any(),any(), any())).thenReturn(presentationDtos);
 
         doGetPageWithParams(PRESENTATION_PATH,
                 Optional.empty(),
