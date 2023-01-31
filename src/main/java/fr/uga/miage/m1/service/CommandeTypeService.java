@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Service
@@ -27,13 +28,19 @@ public class CommandeTypeService {
 
     private final EtablissementRepository etablissementRepository;
 
-    public List<CommandeTypeDTO> getListCommandeType(Utilisateur utilisateur){
-
+    public List<CommandeTypeDTO> getListCommandeType(Utilisateur utilisateur) throws NoSuchElementException{
+        int idEtablissement;
         List<CommandeType> commandeTypes = new ArrayList<>();
         List<CommandeTypeDTO> commandeTypeDTOS = new ArrayList<>();
         List<PresentationForCommandeTypeDTO> presentationForCommandeTypeDTOS;
 
-        Etablissement etablissement = etablissementRepository.findById(utilisateur.getEtablissement().getId()).orElse(null);
+        if(utilisateur.getEtablissement()==null){
+            throw new NoSuchElementException("Aucun etablissement liée a l'utilisateur :"+ utilisateur.getEmail());
+        }
+
+        idEtablissement = utilisateur.getEtablissement().getId();
+        Etablissement etablissement = etablissementRepository.findById(idEtablissement).orElseThrow(() -> new NoSuchElementException("Aucun etablissement trouvé avec l'id :"+ idEtablissement));
+
         List<Utilisateur> utilisateurs=  etablissement.getUtilisateurs();
         for (Utilisateur u: utilisateurs){
             u.getEmail();
