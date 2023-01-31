@@ -27,9 +27,9 @@ public class PresentationService {
 
 
 
-    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Pageable paging) {
+    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> recherche, Optional<Boolean> estReference, Pageable paging) {
 
-        Specification<Presentation> specification = buildSpecifications(recherche);
+        Specification<Presentation> specification = buildSpecifications(recherche,estReference);
 
         Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
@@ -64,7 +64,7 @@ public class PresentationService {
     }
 
 
-    private Specification<Presentation> buildSpecifications(Optional<String> rechercheFilter){
+    private Specification<Presentation> buildSpecifications(Optional<String> rechercheFilter, Optional<Boolean> estReferenceFilter){
 
         return (presentationRoot, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -76,20 +76,26 @@ public class PresentationService {
                 Join<GroupeMedicament, GroupeMedicamentPrincipeActif> groupeMedicamentPrincipeActif = groupeMedicament.join("groupeMedicamentAssoc");
                 Join<GroupeMedicamentPrincipeActif, PrincipeActif> principeActif = groupeMedicamentPrincipeActif.join("principeActif");
                 predicates.add(criteriaBuilder.like(principeActif.get("libelle"), "%"+recherche+"%"));*/
-
-                //Predicate predicate2 = criteriaBuilder.like(presentationRoot.get(Presentation_.LIBELLE), "%"+recherche+"%");
-
                 Path<Object> principeActifPath =
                         presentationRoot.join(Presentation_.MEDICAMENT);
 
-                Predicate predicate2 = criteriaBuilder.like(principeActifPath.get(Medicament_.LIBELLE), "%"+recherche+"%");
+                Predicate predicate1 = criteriaBuilder.like(principeActifPath.get(Medicament_.LIBELLE), "%"+recherche+"%");
                         //.join(Medicament_.GROUPE_MEDICAMENT).join(GroupeMedicament_.GROUPE_MEDICAMENT_ASSOC)
                         //.join(GroupeMedicamentPrincipeActif_.PRINCIPE_ACTIF);
 
                 //Predicate predicate2 = criteriaBuilder.like(principeActifPath.get(PrincipeActif_.LIBELLE), "%"+recherche+"%");
 
-                predicates.add(predicate2);
+                predicates.add(predicate1);
             });
+
+            estReferenceFilter.ifPresent( estReference -> {
+                Path<Object> principeActifPath =
+                        presentationRoot.join(Presentation_.MEDICAMENT);
+
+                Predicate predicate1 = criteriaBuilder.equal(principeActifPath.get(Medicament_.EST_REFERENCE), estReference);
+                predicates.add(predicate1);
+            });
+
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         };
     }

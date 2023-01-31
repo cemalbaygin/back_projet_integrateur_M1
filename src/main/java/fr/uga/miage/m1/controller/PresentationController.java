@@ -24,9 +24,10 @@ public class PresentationController {
 
     @GetMapping
     public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestParam("search") Optional<String> recherche,
+                                                                 @RequestParam("estReference") Optional<Boolean> estReference,
                                                                  @ParameterObject @PageableDefault Pageable pageable) {
 
-        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(recherche, pageable);
+        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(recherche, estReference, pageable);
 
         return new ResponseEntity<>(presentations, HttpStatus.OK);
     }
