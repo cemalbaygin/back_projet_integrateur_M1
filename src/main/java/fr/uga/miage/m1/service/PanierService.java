@@ -69,6 +69,29 @@ public class PanierService {
         return true;
     }
 
+    public Boolean addPresentationsToPanier(Utilisateur utilisateur, List<AjouterAuPanierDTO> listdto) {
+        log.info("DEPART");
+        Commande commande = this.getOrCreatePanier(utilisateur);
+
+        for (AjouterAuPanierDTO dto : listdto) {
+
+            Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getCode_CIP13())).orElseThrow();
+
+            CommandePresentationKey commandePresentationKey = new CommandePresentationKey(commande.getId(), pres.getCodeCIP13());
+            CommandePresentation commandePresentation = commandesPresentationRepository.findById(commandePresentationKey).orElse(null);
+            if (commandePresentation == null) {
+                commandePresentation = new CommandePresentation();
+                commandePresentation.setId(commandePresentationKey);
+                commandePresentation.setQuantite(dto.getQuantite());
+                commandePresentation.setEtat(EtatCommande.panier);
+            } else {
+                commandePresentation.setQuantite(commandePresentation.getQuantite() + dto.getQuantite());
+            }
+            commandesPresentationRepository.save(commandePresentation);
+        }
+        return true;
+    }
+
     public List<PanierPresentationDTO> updateFromPanier(Utilisateur utilisateur, AjouterAuPanierDTO dto) {
         Commande commande = this.getOrCreatePanier(utilisateur);
         Presentation pres = presentationsRepository.findById(Long.valueOf(dto.getCode_CIP13())).orElseThrow();
