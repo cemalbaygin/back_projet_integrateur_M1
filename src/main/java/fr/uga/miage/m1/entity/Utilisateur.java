@@ -34,6 +34,7 @@ public class Utilisateur implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "utilisateur")
+    @OrderBy("dateAchat DESC")
     private List<Commande> commandes;
 
     @OneToMany(mappedBy = "utilisateur")

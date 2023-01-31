@@ -11,9 +11,7 @@ import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,11 +28,14 @@ public class CommandeController {
 
     @GetMapping
     public ResponseEntity<List<CommandeCompleteDTO>> getListCommandes(Authentication authentication) {
-
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
-        log.info("DEPART: ");
         List<CommandeCompleteDTO> commandesCompleteDTOS = commandeService.getListCommandes(utilisateur);
 
         return new ResponseEntity<>(commandesCompleteDTOS, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{idCommande}")
+    public ResponseEntity<Boolean> annulerCommande(@PathVariable Integer idCommande){
+        return new ResponseEntity<>(commandeService.annulerEnAttente(idCommande), HttpStatus.OK);
     }
 }

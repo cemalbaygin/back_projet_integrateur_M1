@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CommandePresentationDTO {
-    PresentationDTO presentation;
+    PresentationMedicamentDTO presentationMedicament;
     private Double prixAchat;
     private Integer quantite;
     private EtatCommande etat;
