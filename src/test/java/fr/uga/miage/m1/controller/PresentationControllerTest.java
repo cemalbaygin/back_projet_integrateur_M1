@@ -1,5 +1,8 @@
 package fr.uga.miage.m1.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.uga.miage.m1.config.JwtAuthenticationFilter;
 import fr.uga.miage.m1.config.SecurityConfiguration;
 import fr.uga.miage.m1.model.dto.*;
@@ -24,13 +27,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -141,12 +144,12 @@ public class PresentationControllerTest {
 
         presentationDtos = new PageImpl<PresentationMedicamentDTO>(list,pageable, list.size());
 
-        RequestRecheche r1 = new RequestRecheche();
+        RequestRecheche r1 = new RequestRecheche(Optional.of("oui"),Optional.of("non"),Optional.of(true),Optional.of(false), Optional.of(Arrays.asList("fab1", "fab2")));
 
-        when(presentationService.getPresentationsWithFilter(r1,any())).thenReturn(presentationDtos);
+        when(presentationService.getPresentationsWithFilter(any(),any())).thenReturn(presentationDtos);
 
-        doGetPageWithParams(PRESENTATION_PATH,
-                Optional.empty(),
+        doPostPageWithParams(PRESENTATION_PATH,
+                r1,
                 Optional.empty())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isNotEmpty())
@@ -219,6 +222,31 @@ public class PresentationControllerTest {
 
         return mvc.perform(get(path).params(params)
                 .contentType(MediaType.APPLICATION_JSON));
+    }
+
+    private ResultActions doPostPageWithParams( String path,
+                                                RequestRecheche recherche,
+                                               Optional<Pageable> pageable) throws Exception {
+        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+        if(pageable.isPresent()){
+            params.add("size",String.valueOf(pageable.get().getPageSize()));
+            params.add("page",String.valueOf(pageable.get().getPageNumber()));
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+
+        Map<String,Object> body = new HashMap<>();
+        body.put("nomMedicament",recherche.nomMedicament.get());
+        body.put("principeActif",recherche.principeActif.get());
+        body.put("estReference",recherche.estReference.get());
+        body.put("estEnStock",recherche.estEnStock.get());
+        body.put("fabricants",recherche.fabricants.get());
+
+        return mvc.perform(post(path).params(params)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(body)));
     }
 
 }
