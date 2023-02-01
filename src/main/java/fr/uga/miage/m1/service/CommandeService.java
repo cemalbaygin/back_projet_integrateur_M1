@@ -15,6 +15,8 @@ import fr.uga.miage.m1.repository.PresentationsRepository;
 import fr.uga.miage.m1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +97,13 @@ public class CommandeService {
         log.info("Expedition des commandes - end");
     }
 
-    @Transactional(readOnly = false, isolation = Isolation.REPEATABLE_READ)
+    @Recover
+    public boolean recoverAnnulerEnAttente(Exception e, String message){
+        return false;
+    };
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Retryable(maxAttempts = 25)
     public boolean annulerEnAttente(Integer idCommande){
         Commande c = commandesRepository.findById(idCommande).orElseThrow();
         if(c.getEtat() != EtatCommande.attente_paiement) throw new NoSuchElementException();
@@ -107,7 +115,7 @@ public class CommandeService {
             CommandePresentation comPres = commandePresentations.get(i);
 
             if (comPres.getEtat() == EtatCommande.attente_paiement_reserver) {
-                Presentation pres = comPres.getPresentation();
+                Presentation pres = presentationsRepository.findByCodeCIP13(comPres.getPresentation().getCodeCIP13()).orElse(null);
                 pres.setQuantiteStock(pres.getQuantiteStock() + comPres.getQuantite());
                 presentationsRepository.save(pres);
             }
