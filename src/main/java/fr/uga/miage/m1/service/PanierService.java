@@ -156,7 +156,7 @@ public class PanierService {
         return true;
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = false, isolation = Isolation.REPEATABLE_READ)
     public boolean passerCommande(Utilisateur user, String commandeTypeName) {
 
         Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();

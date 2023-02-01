@@ -16,9 +16,9 @@ import fr.uga.miage.m1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.rmi.ServerException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -95,6 +95,7 @@ public class CommandeService {
         log.info("Expedition des commandes - end");
     }
 
+    @Transactional(readOnly = false, isolation = Isolation.REPEATABLE_READ)
     public boolean annulerEnAttente(Integer idCommande){
         Commande c = commandesRepository.findById(idCommande).orElseThrow();
         if(c.getEtat() != EtatCommande.attente_paiement) throw new NoSuchElementException();
