@@ -5,12 +5,11 @@ import fr.uga.miage.m1.model.EtatCommande;
 import fr.uga.miage.m1.model.dto.PanierPresentationDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.key.CommandePresentationKey;
+import fr.uga.miage.m1.model.key.CommandeTypePresentationKey;
 import fr.uga.miage.m1.model.mapper.CommandeMapper;
 import fr.uga.miage.m1.model.mapper.PresentationMapper;
 import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
-import fr.uga.miage.m1.repository.CommandesPresentationRepository;
-import fr.uga.miage.m1.repository.CommandesRepository;
-import fr.uga.miage.m1.repository.PresentationsRepository;
+import fr.uga.miage.m1.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,11 @@ import java.util.stream.Collectors;
 @Service
 @Log
 public class PanierService {
+    private final CommandeTypeRepository commandeTypeRepository;
     private final CommandesRepository commandeRepository;
     private final PresentationsRepository presentationsRepository;
     private final CommandesPresentationRepository commandesPresentationRepository;
+    private final PresentationsCommandesTypeRepository presentationsCommandesTypeRepository;
     private final CommandeMapper commandeMapper;
     private final PresentationMapper presentationMapper;
     private final CommandeService commandeService;
@@ -156,11 +157,30 @@ public class PanierService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public boolean passerCommande(Utilisateur user) {
+    public boolean passerCommande(Utilisateur user, String commandeTypeName) {
 
         Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
         List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
         if (commandePresentations.size() == 0) throw new NoSuchElementException();
+
+        if(commandeTypeName != null && commandeTypeName.length() > 3){
+            CommandeType commandeType = new CommandeType();
+            commandeType.setLibelle(commandeTypeName);
+            commandeType.setUtilisateur(user);
+            commandeType = commandeTypeRepository.save(commandeType);
+
+            for (CommandePresentation cmd:
+            panier.getCommandePresentations()) {
+                PresentationCommandeType prect= new PresentationCommandeType();
+
+                prect.setId(new CommandeTypePresentationKey(commandeType.getId(), cmd.getPresentation().getCodeCIP13()));
+                prect.setQuantite(cmd.getQuantite());
+                prect.setPresentation(cmd.getPresentation());
+
+                presentationsCommandesTypeRepository.save(prect);
+            }
+
+        }
 
         panier.setEtat(EtatCommande.attente_paiement);
         panier.setDateAchat(new Timestamp(System.currentTimeMillis()));

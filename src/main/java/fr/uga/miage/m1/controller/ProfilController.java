@@ -26,7 +26,8 @@ public class ProfilController {
     @GetMapping
     public ResponseEntity<UtilisateurDTO> getProfil(Authentication authentication) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
-        return new ResponseEntity<>(mapper.entityToDto(utilisateur), HttpStatus.OK);
+        UtilisateurDTO utilisateurDTO = userService.getProfil(authentication);
+        return new ResponseEntity<>(utilisateurDTO, HttpStatus.OK);
     }
 
     @PostMapping

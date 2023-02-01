@@ -21,4 +21,6 @@ public interface AutoMapper {
     UtilisateurDTO entityToDto(Utilisateur entity);
 
     CommandeTypeDTO entityTdto(CommandeType entity);
+
+    EtablissementDto entityToDto(Etablissement entity);
 }

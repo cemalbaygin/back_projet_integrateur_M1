@@ -68,10 +68,11 @@ public class PanierController {
     }
 
     @PostMapping("/valider")
-    public ResponseEntity<Boolean> passerCommande(Authentication authentication) {
+    public ResponseEntity<Boolean> passerCommande(Authentication authentication,
+                                                  @RequestParam("commandeType") String commandeType) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
 
-        return new ResponseEntity<>(service.passerCommande(utilisateur), HttpStatus.OK);
+        return new ResponseEntity<>(service.passerCommande(utilisateur, commandeType), HttpStatus.OK);
     }
 
     @PostMapping("/allPresentations")

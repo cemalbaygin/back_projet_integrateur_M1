@@ -27,6 +27,17 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final AutoMapper mapper;
 
+    public UtilisateurDTO getProfil(Authentication authentication){
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+        var utilisateurDto = UtilisateurDTO.builder()
+                .email(utilisateur.getEmail())
+                .firstname(utilisateur.getFirstname())
+                .lastname(utilisateur.getLastname())
+                .etablissementDto(mapper.entityToDto(utilisateur.getEtablissement()))
+                .build();
+
+        return utilisateurDto;
+    }
     public ResponseEntity<UtilisateurDTO> changeMdp(Authentication authentication, ProfilPostDTO profil){
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
         if (!profil.getEmail().equals(utilisateur.getEmail())) {
