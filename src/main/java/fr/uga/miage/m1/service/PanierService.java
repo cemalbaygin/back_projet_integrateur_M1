@@ -12,6 +12,8 @@ import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +122,6 @@ public class PanierService {
 
     public List<PresentationMedicamentDTO> getSimilaires(String codeCIP13) {
         Presentation presentation = presentationsRepository.findById(Long.valueOf(codeCIP13)).orElseThrow();
-
         List<Presentation> presentationMedicament = presentation.getMedicament().getPresentations();
 
         List<Medicament> meds = presentation.getMedicament()
@@ -155,8 +156,11 @@ public class PanierService {
 
         return true;
     }
+    @Recover
+    public boolean recoverPasserCommande(Exception e, String message) {return false;}
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Retryable(maxAttempts = 25)
     public boolean passerCommande(Utilisateur user, String commandeTypeName) {
 
         Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
@@ -188,7 +192,7 @@ public class PanierService {
         for (int i = 0; i < commandePresentations.size(); i++) {
 
             CommandePresentation comPres = commandePresentations.get(i);
-            Presentation pres = comPres.getPresentation();
+            Presentation pres = presentationsRepository.findByCodeCIP13(comPres.getPresentation().getCodeCIP13()).orElse(null);
 
             comPres.setEtat(EtatCommande.attente_paiement);
             comPres.setPrixAchat(pres.getPrix());
