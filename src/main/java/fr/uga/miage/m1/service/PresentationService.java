@@ -4,6 +4,7 @@ import fr.uga.miage.m1.entity.*;
 import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.mapper.PresentationMapper;
+import fr.uga.miage.m1.model.request.RequestRecheche;
 import fr.uga.miage.m1.repository.PresentationsRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Path;
@@ -27,9 +28,15 @@ public class PresentationService {
 
 
 
-    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(Optional<String> nomMedicament,Optional<String> principeActif, Optional<Boolean> estReference,Optional<Boolean> estEnStock ,Pageable paging) {
+    public Page<PresentationMedicamentDTO> getPresentationsWithFilter(RequestRecheche recherche,
+                                                                      Pageable paging) {
 
-        Specification<Presentation> specification = buildSpecifications(nomMedicament,principeActif,estReference,estEnStock);
+        Specification<Presentation> specification = buildSpecifications(
+                recherche.nomMedicament,
+                recherche.principeActif,
+                recherche.estReference,
+                recherche.estEnStock,
+                recherche.fabricants);
 
         Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
@@ -64,7 +71,11 @@ public class PresentationService {
     }
 
 
-    private Specification<Presentation> buildSpecifications(Optional<String> nomMedicamentFilter, Optional<String> principeActifFilter ,Optional<Boolean> estReferenceFilter, Optional<Boolean> estEnStockFilter){
+    private Specification<Presentation> buildSpecifications(Optional<String> nomMedicamentFilter,
+                                                            Optional<String> principeActifFilter,
+                                                            Optional<Boolean> estReferenceFilter,
+                                                            Optional<Boolean> estEnStockFilter,
+                                                            Optional<List<String>> fabricantsFilter){
 
         return (presentationRoot, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -115,6 +126,17 @@ public class PresentationService {
                     predicate1 = criteriaBuilder.le(presentationRoot.get(Presentation_.QUANTITE_STOCK), 0);
                 }
                 predicates.add(predicate1);
+            });
+
+            fabricantsFilter.ifPresent(fabricants -> {
+                Join<Fabricant, Presentation> fabricantRoot = presentationRoot
+                        .join("medicament")
+                        .join("fabricants");
+
+                predicates.add(criteriaBuilder.or(fabricants
+                        .stream()
+                        .map(nomFab -> criteriaBuilder.like(fabricantRoot.get(Fabricant_.LIBELLE),"%"+nomFab+"%"))
+                        .toArray(Predicate[]::new)));
             });
             query.distinct(true);
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));

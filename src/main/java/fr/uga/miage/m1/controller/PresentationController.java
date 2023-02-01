@@ -2,8 +2,10 @@ package fr.uga.miage.m1.controller;
 
 import fr.uga.miage.m1.model.dto.PresentationCompleteDTO;
 import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
+import fr.uga.miage.m1.model.request.RequestRecheche;
 import fr.uga.miage.m1.service.PresentationService;
 import lombok.RequiredArgsConstructor;
+import oracle.ucp.proxy.annotation.Post;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -22,14 +25,11 @@ public class PresentationController {
 
     private final PresentationService presentationService;
 
-    @GetMapping
-    public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestParam("nom") Optional<String> nomMedicament,
-                                                                 @RequestParam("principeActif") Optional<String> principeActif,
-                                                                 @RequestParam("estReference") Optional<Boolean> estReference,
-                                                                 @RequestParam("estEnStock") Optional<Boolean> estEnStock,
+    @PostMapping
+    public ResponseEntity<Page<PresentationMedicamentDTO>> index(@RequestBody RequestRecheche recherche,
                                                                  @ParameterObject @PageableDefault Pageable pageable) {
 
-        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(nomMedicament,principeActif , estReference,estEnStock, pageable);
+        Page<PresentationMedicamentDTO> presentations = presentationService.getPresentationsWithFilter(recherche, pageable);
 
         return new ResponseEntity<>(presentations, HttpStatus.OK);
     }
