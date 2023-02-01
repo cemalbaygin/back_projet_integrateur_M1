@@ -2,7 +2,6 @@ package fr.uga.miage.m1.controller;
 
 import fr.uga.miage.m1.entity.Utilisateur;
 import fr.uga.miage.m1.model.dto.CommandeTypeDTO;
-import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.service.CommandeTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +20,6 @@ import java.util.NoSuchElementException;
 @RequestMapping("/private/commandetype")
 @Tag(name = "CommandeType")
 public class CommandeTypeController {
-
-    private final AutoMapper mapper;
-
     private final CommandeTypeService commandeTypeService;
 
     @GetMapping
