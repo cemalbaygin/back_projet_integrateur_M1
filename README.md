@@ -1,5 +1,5 @@
 # Notes
-
+## Diagramme UML
 ## Database schema
 
 This project is compliant with the simple schema of database below:
@@ -44,13 +44,20 @@ To get your personal token:
 https://im2ag-wiki.univ-grenoble-alpes.fr/doku.php?id=environnements:oracle
 
  Compile the server :
-
+ 
+```
 \>mvn clean install
+```
 
  Launch the server :
-
+ 
+```
 \>mvn spring-boot:run
+```
 
 To test the installation, go to this URL :
 
 *http://<URL_DE_LA_VM>:8080/hello*
+
+## Diagramme UML
+
