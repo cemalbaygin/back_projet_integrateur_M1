@@ -1,5 +1,11 @@
-# Notes
-## Diagramme UML
+
+## Sommaire
+
+ - [Database schema](#database-schema)
+ - [Project installation](#project-installation)
+ - [Diagramme UML](#diagramme-uml)
+ - [Rapport du projet](#rapport-du-projet)
+
 ## Database schema
 
 This project is compliant with the simple schema of database below:
@@ -59,6 +65,10 @@ To test the installation, go to this URL :
 
 *http://<URL_DE_LA_VM>:8080/hello*
 
-## Diagramme UML
+## Diagramme UML du projet
 
-![Main](https://user-images.githubusercontent.com/121033914/216333398-f3ac8033-d464-4978-935e-af58a0612b66.jpg)
+![Diagramme UML ](https://user-images.githubusercontent.com/121033914/216333398-f3ac8033-d464-4978-935e-af58a0612b66.jpg)
+
+## Rapport du projet
+[Rapport du projet](https://github.com/cemalbaygin/back_projet_integrateur_M1/files/10569314/Projet_BDI_G_9.pdf)
+
