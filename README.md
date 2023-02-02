@@ -3,7 +3,7 @@
 
  - [Database schema](#database-schema)
  - [Project installation](#project-installation)
- - [Diagramme UML](#diagramme-uml)
+ - [Diagramme UML du projet](#diagramme-uml-du-projet)
  - [Rapport du projet](#rapport-du-projet)
 
 ## Database schema
