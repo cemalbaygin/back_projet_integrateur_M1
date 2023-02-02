@@ -61,4 +61,4 @@ To test the installation, go to this URL :
 
 ## Diagramme UML
 
-![alt text](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/0b0eb5e2-5937-4032-bc0d-9cf19b6c422e/Main.jpghttp://url/to/img.png)
+![Main](https://user-images.githubusercontent.com/121033914/216333398-f3ac8033-d464-4978-935e-af58a0612b66.jpg)
