@@ -1,7 +1,6 @@
 package fr.uga.miage.m1.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.uga.miage.m1.config.JwtAuthenticationFilter;
 import fr.uga.miage.m1.config.SecurityConfiguration;
@@ -30,7 +29,6 @@ import org.springframework.util.MultiValueMap;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = PresentationController.class, excludeAutoConfiguration = SecurityConfiguration.class)
 @WithMockUser
 @AutoConfigureMockMvc(addFilters = false)
-public class PresentationControllerTest {
+class PresentationControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -238,11 +236,11 @@ public class PresentationControllerTest {
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
 
         Map<String,Object> body = new HashMap<>();
-        body.put("nomMedicament",recherche.nomMedicament.get());
-        body.put("principeActif",recherche.principeActif.get());
-        body.put("estReference",recherche.estReference.get());
-        body.put("estEnStock",recherche.estEnStock.get());
-        body.put("fabricants",recherche.fabricants.get());
+        body.put("nomMedicament",recherche.getNomMedicament().get());
+        body.put("principeActif",recherche.getPrincipeActif().get());
+        body.put("estReference",recherche.getEstReference().get());
+        body.put("estEnStock",recherche.getEstEnStock().get());
+        body.put("fabricants",recherche.getFabricants().get());
 
         return mvc.perform(post(path).params(params)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -3,7 +3,6 @@ package fr.uga.miage.m1.controller;
 import fr.uga.miage.m1.model.dto.FabricantDTO;
 import fr.uga.miage.m1.service.FabricantService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

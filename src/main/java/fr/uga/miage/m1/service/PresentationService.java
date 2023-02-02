@@ -32,11 +32,11 @@ public class PresentationService {
                                                                       Pageable paging) {
 
         Specification<Presentation> specification = buildSpecifications(
-                recherche.nomMedicament,
-                recherche.principeActif,
-                recherche.estReference,
-                recherche.estEnStock,
-                recherche.fabricants);
+                recherche.getNomMedicament(),
+                recherche.getPrincipeActif(),
+                recherche.getEstReference(),
+                recherche.getEstEnStock(),
+                recherche.getFabricants());
 
         Page<Presentation> presentations = presentationRepo.findAll(specification,paging);
 
@@ -44,7 +44,7 @@ public class PresentationService {
     }
 
     public PresentationCompleteDTO getPresentation(Long codeCIP13) throws NoSuchElementException{
-        return presentationMapper.entityToDto(presentationRepo.findById(Long.valueOf(codeCIP13))
+        return presentationMapper.entityToDto(presentationRepo.findById(codeCIP13)
                 .orElseThrow(() -> new NoSuchElementException("Presentation not found with codeCIP13 : "+codeCIP13)));
     }
 
@@ -86,16 +86,6 @@ public class PresentationService {
                 Join<Medicament, Presentation> medicament = presentationRoot.join("medicament");
                 predicates.add(criteriaBuilder.like(medicament.get(Medicament_.LIBELLE), "%"+nomMedicament+"%"));
 
-                /*Path<Object> principeActifPath =
-                        presentationRoot.join(Presentation_.MEDICAMENT);
-
-                Predicate predicate1 = criteriaBuilder.like(principeActifPath.get(Medicament_.LIBELLE), "%"+recherche+"%");*/
-                        //.join(Medicament_.GROUPE_MEDICAMENT).join(GroupeMedicament_.GROUPE_MEDICAMENT_ASSOC)
-                        //.join(GroupeMedicamentPrincipeActif_.PRINCIPE_ACTIF);
-
-                //Predicate predicate2 = criteriaBuilder.like(principeActifPath.get(PrincipeActif_.LIBELLE), "%"+recherche+"%");
-
-                //predicates.add(predicate1);
             });
 
             principeActifFilter.ifPresent(principeActif -> {
@@ -120,7 +110,7 @@ public class PresentationService {
 
             estEnStockFilter.ifPresent( estEnStock -> {
                 Predicate predicate1;
-                if(estEnStock){
+                if(estEnStock.booleanValue()){
                     predicate1 = criteriaBuilder.gt(presentationRoot.get(Presentation_.QUANTITE_STOCK), 0);
                 }else{
                     predicate1 = criteriaBuilder.le(presentationRoot.get(Presentation_.QUANTITE_STOCK), 0);

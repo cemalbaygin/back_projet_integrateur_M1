@@ -9,13 +9,10 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface PresentationMapper {
     AutoMapper autoMapper = Mappers.getMapper(AutoMapper.class);
-
-
 
     default PresentationMedicamentDTO presentationMedicamentDTO(Presentation entity) {
         PresentationMedicamentDTO dto = new PresentationMedicamentDTO();
@@ -32,7 +29,7 @@ public interface PresentationMapper {
         dto.setPresentations(
                 medicament
                         .getPresentations()
-                        .stream().map(pres -> autoMapper.entityToDto(pres))
+                        .stream().map(autoMapper::entityToDto)
                         .toList()
         );
 
@@ -61,11 +58,11 @@ public interface PresentationMapper {
                 }).toList());
 
 
-        List<Presentation> presMed = groupe.getMedicaments().stream().map(med -> med.getPresentations().stream().findFirst()).flatMap(Optional::stream).collect(Collectors.toList());
+        List<Presentation> presMed = groupe.getMedicaments().stream().map(med -> med.getPresentations().stream().findFirst()).flatMap(Optional::stream).toList();
 
         groupeMedicamentDTO.setPresentationsMedicaments(
                 presMed.stream()
-                        .map(this::presentationMedicamentDTO).collect(Collectors.toList())
+                        .map(this::presentationMedicamentDTO).toList()
         );
 
 
@@ -73,8 +70,8 @@ public interface PresentationMapper {
                 medicament
                         .getPrescriptions()
                         .stream()
-                        .map(prescription -> autoMapper.entityToDto(prescription))
-                        .collect(Collectors.toList())
+                        .map(autoMapper::entityToDto)
+                        .toList()
         );
 
         dto.setGroupeMedicament(groupeMedicamentDTO);
