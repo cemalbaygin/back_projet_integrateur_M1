@@ -5,7 +5,7 @@
  - [Installation du projet](#installation-du-projet)
  - [Diagramme UML du projet](#diagramme-uml-du-projet)
  - [Rapport du projet](#rapport-du-projet)
- - [Tous nos documents de conception sur Notion] (#tous-nos-documents-de-conception-sur-notion)
+ - [Tous nos documents de conception sur Notion](#tous-nos-documents-de-conception-sur-notion)
 
 ## Schéma de base de données
 
