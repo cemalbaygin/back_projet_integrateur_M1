@@ -5,6 +5,7 @@
  - [Installation du projet](#installation-du-projet)
  - [Diagramme UML du projet](#diagramme-uml-du-projet)
  - [Rapport du projet](#rapport-du-projet)
+ - [Tous nos documents de conception sur Notion] (#tous-nos-documents-de-conception-sur-notion)
 
 ## Schéma de base de données
 
@@ -72,3 +73,5 @@ Pour tester l'installation, aller sur l'URL :
 ## Rapport du projet
 [Rapport du projet](https://github.com/cemalbaygin/back_projet_integrateur_M1/files/10569314/Projet_BDI_G_9.pdf)
 
+## Tous nos documents de conception sur Notion
+https://jelly-conga-3a7.notion.site/BPMN-Ajouter-un-l-ment-au-panier-00dbcb6865f54103bc6264e4be67d953
