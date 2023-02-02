@@ -74,4 +74,5 @@ Pour tester l'installation, aller sur l'URL :
 [Rapport du projet](https://github.com/cemalbaygin/back_projet_integrateur_M1/files/10569314/Projet_BDI_G_9.pdf)
 
 ## Tous nos documents de conception sur Notion
-https://jelly-conga-3a7.notion.site/BPMN-Ajouter-un-l-ment-au-panier-00dbcb6865f54103bc6264e4be67d953
+
+https://jelly-conga-3a7.notion.site/Notre-projet-int-grateur-da1887951b0f4aff994be91284d0caa4
