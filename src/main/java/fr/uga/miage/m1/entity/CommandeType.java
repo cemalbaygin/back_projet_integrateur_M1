@@ -14,14 +14,14 @@ import java.util.List;
 public class CommandeType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(unique = true)
     @NotNull(message = "le libellé d'une commandeType ne doit pas être null")
     private String libelle;
 
-    @OneToMany(mappedBy = "commandeType")
+    @OneToMany(mappedBy = "commandeType", cascade = CascadeType.PERSIST)
     private List<PresentationCommandeType> presentationCommandeTypes;
 
     @ManyToOne

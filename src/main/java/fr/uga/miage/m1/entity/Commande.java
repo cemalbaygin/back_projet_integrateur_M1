@@ -26,7 +26,7 @@ public class Commande {
     @Enumerated(EnumType.STRING)
     private EtatCommande etat;
 
-    @OneToMany(mappedBy = "commande", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "commande", fetch = FetchType.LAZY)
     private List<CommandePresentation> commandePresentations;
 
     @ManyToOne

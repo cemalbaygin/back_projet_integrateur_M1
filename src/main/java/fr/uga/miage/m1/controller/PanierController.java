@@ -2,6 +2,7 @@ package fr.uga.miage.m1.controller;
 
 import fr.uga.miage.m1.entity.Utilisateur;
 import fr.uga.miage.m1.model.dto.PanierPresentationDTO;
+import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.request.AjouterAuPanierDTO;
 import fr.uga.miage.m1.service.PanierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,18 +53,33 @@ public class PanierController {
     }
 
     @PostMapping("{codeCIP13}")
+    public ResponseEntity<List<PresentationMedicamentDTO>> substituerProduit(@PathVariable("codeCIP13") String codeCIP13) {
+
+        return new ResponseEntity<>(service.getSimilaires(codeCIP13), HttpStatus.OK);
+    }
+
+    @PostMapping("{codeCIP13}/substituer")
     public ResponseEntity<Boolean> substituerProduit(Authentication authentication,
-                                                     @PathVariable("codeCIP13") String codeCIP13) {
+                                                     @PathVariable("codeCIP13") String sourceCodeCIP13,
+                                                     @RequestParam("destination") String destinationCodeCIP13) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
 
-        return new ResponseEntity<>(service.substituerProduit(utilisateur, codeCIP13), HttpStatus.OK);
+        return new ResponseEntity<>(service.substituerProduit(utilisateur, sourceCodeCIP13, destinationCodeCIP13), HttpStatus.OK);
     }
 
     @PostMapping("/valider")
-    public ResponseEntity<Boolean> passerCommande(Authentication authentication) {
+    public ResponseEntity<Boolean> passerCommande(Authentication authentication,
+                                                  @RequestParam("commandeType") String commandeType) {
         Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
 
-        return new ResponseEntity<>(service.passerCommande(utilisateur), HttpStatus.OK);
+        return new ResponseEntity<>(service.passerCommande(utilisateur, commandeType), HttpStatus.OK);
+    }
+
+    @PostMapping("/allPresentations")
+    public ResponseEntity<Boolean> addAllToPanier(Authentication authentication,
+                                               @RequestBody List<AjouterAuPanierDTO> dto) {
+        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
+        return new ResponseEntity<>(service.addPresentationsToPanier(utilisateur, dto), HttpStatus.OK);
     }
 
 

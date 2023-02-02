@@ -11,6 +11,5 @@ import java.util.List;
 @Builder
 public class CommandeCompleteDTO {
     CommandeDTO commandeDTO;
-
     List<CommandePresentationDTO> presentations;
 }

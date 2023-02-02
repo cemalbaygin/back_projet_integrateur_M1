@@ -24,7 +24,7 @@ public class CommandeRepositoryTest {
 
     @Test
     public void  findAllIsEmpty(){
-         List<Presentation> presentations = presentationsRepository.findAll();
+        List<Presentation> presentations = presentationsRepository.findAll();
         Assertions.assertEquals(0, presentations.size());
         assertThat(presentations).isNotNull();
     }
