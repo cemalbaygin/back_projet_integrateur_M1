@@ -15,5 +15,5 @@ import java.util.Optional;
 public interface PresentationsRepository extends JpaRepository<Presentation, Long>, JpaSpecificationExecutor<Presentation> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value ="10000")})
-    Optional<Presentation> findByCodeCIP13(Long CodeCIP13);
+    Optional<Presentation> findByCodeCIP13(Long codeCIP13);
 }

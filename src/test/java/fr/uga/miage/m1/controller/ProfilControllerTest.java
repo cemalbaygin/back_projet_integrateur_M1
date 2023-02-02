@@ -73,7 +73,7 @@ public class ProfilControllerTest {
     }
 
     @Test
-    public void getProfil_Success() throws Exception {
+    void getProfil_Success() throws Exception {
         when(authentication.getPrincipal()).thenReturn(utilisateur);
         when(mapper.entityToDto(utilisateur)).thenReturn(utilisateurDto);
 
@@ -83,7 +83,7 @@ public class ProfilControllerTest {
     }
 
     @Test
-    public void postProfil_Success() throws Exception {
+    void postProfil_Success() throws Exception {
         when(userService.changeMdp(authentication, profilPostDto)).thenReturn(new ResponseEntity<>(utilisateurDto, HttpStatus.OK));
 
         mockMvc.perform(post("/private/profil")

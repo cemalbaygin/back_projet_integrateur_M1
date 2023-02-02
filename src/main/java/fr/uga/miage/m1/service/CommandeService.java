@@ -100,7 +100,7 @@ public class CommandeService {
     @Recover
     public boolean recoverAnnulerEnAttente(Exception e, String message){
         return false;
-    };
+    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Retryable(maxAttempts = 25)
@@ -116,7 +116,8 @@ public class CommandeService {
 
             if (comPres.getEtat() == EtatCommande.attente_paiement_reserver) {
                 Presentation pres = presentationsRepository.findByCodeCIP13(comPres.getPresentation().getCodeCIP13()).orElse(null);
-                pres.setQuantiteStock(pres.getQuantiteStock() + comPres.getQuantite());
+                if(pres !=null)
+                    pres.setQuantiteStock(pres.getQuantiteStock() + comPres.getQuantite());
                 presentationsRepository.save(pres);
             }
 

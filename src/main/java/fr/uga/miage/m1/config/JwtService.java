@@ -24,7 +24,6 @@ public class JwtService {
   private static final String SECRET_KEY =  Base64.getEncoder().encodeToString(key.getEncoded());
 
   public String extractUsername(String token) {
-    System.out.println("token "+token);
     return extractClaim(token, Claims::getSubject);
   }
 
@@ -51,7 +50,7 @@ public class JwtService {
         .compact();
   }
 
-  public boolean isTokenValid(String token, UserDetails userDetails) {
+  public boolean isTokenValid(String token) {
     return !isTokenExpired(token);
   }
 

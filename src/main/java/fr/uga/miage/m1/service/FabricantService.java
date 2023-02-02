@@ -5,18 +5,15 @@ import fr.uga.miage.m1.model.dto.FabricantDTO;
 import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.repository.FabricantsRepository;
 import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class FabricantService {
         return fabricantsRepository.findAll(buildSpecifications(nomMedicament, principeActif),Sort.by(Sort.Direction.ASC, "libelle"))
                 .stream()
                 .map(mapper::entityToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Specification<Fabricant> buildSpecifications(Optional<String> nomMedicamentFilter , Optional<String> principeActifFilter){

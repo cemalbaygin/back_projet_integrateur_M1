@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +33,6 @@ public class PanierService {
     private final PresentationsCommandesTypeRepository presentationsCommandesTypeRepository;
     private final CommandeMapper commandeMapper;
     private final PresentationMapper presentationMapper;
-    private final CommandeService commandeService;
 
     public Commande getOrCreatePanier(Utilisateur utilisateur) {
         Commande commande = commandeRepository.getPanier(utilisateur.getId()).orElse(null);
@@ -132,7 +130,7 @@ public class PanierService {
             presentationMedicament.addAll(m.getPresentations());
         }
 
-        return presentationMedicament.stream().map(m -> presentationMapper.presentationMedicamentDTO(m)).collect(Collectors.toList());
+        return presentationMedicament.stream().map(presentationMapper::presentationMedicamentDTO).toList();
     }
 
     public Boolean substituerProduit(Utilisateur utilisateur, String sourceCodeCIP13, String destinationCodeCIP13) {
@@ -165,7 +163,7 @@ public class PanierService {
 
         Commande panier = commandeRepository.getPanier(user.getId()).orElseThrow();
         List<CommandePresentation> commandePresentations = panier.getCommandePresentations();
-        if (commandePresentations.size() == 0) throw new NoSuchElementException();
+        if (commandePresentations.isEmpty()) throw new NoSuchElementException();
 
         if(commandeTypeName != null && commandeTypeName.length() > 3){
             CommandeType commandeType = new CommandeType();
@@ -195,7 +193,8 @@ public class PanierService {
             Presentation pres = presentationsRepository.findByCodeCIP13(comPres.getPresentation().getCodeCIP13()).orElse(null);
 
             comPres.setEtat(EtatCommande.attente_paiement);
-            comPres.setPrixAchat(pres.getPrix());
+            if(pres != null)
+                comPres.setPrixAchat(pres.getPrix());
 
             if (pres.getQuantiteStock() >= comPres.getQuantite()) {
                 pres.setQuantiteStock(pres.getQuantiteStock() - comPres.getQuantite());

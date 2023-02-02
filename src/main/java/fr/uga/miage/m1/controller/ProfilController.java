@@ -1,9 +1,7 @@
 package fr.uga.miage.m1.controller;
 
-import fr.uga.miage.m1.entity.Utilisateur;
 import fr.uga.miage.m1.model.dto.ProfilPostDTO;
 import fr.uga.miage.m1.model.dto.UtilisateurDTO;
-import fr.uga.miage.m1.model.mapper.AutoMapper;
 import fr.uga.miage.m1.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Profil")
 @Log
 public class ProfilController {
-    private final AutoMapper mapper;
-
     private final UserService userService;
 
     @GetMapping
     public ResponseEntity<UtilisateurDTO> getProfil(Authentication authentication) {
-        Utilisateur utilisateur = (Utilisateur) authentication.getPrincipal();
         UtilisateurDTO utilisateurDTO = userService.getProfil(authentication);
         return new ResponseEntity<>(utilisateurDTO, HttpStatus.OK);
     }

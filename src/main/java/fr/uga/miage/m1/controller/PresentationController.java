@@ -5,7 +5,6 @@ import fr.uga.miage.m1.model.dto.PresentationMedicamentDTO;
 import fr.uga.miage.m1.model.request.RequestRecheche;
 import fr.uga.miage.m1.service.PresentationService;
 import lombok.RequiredArgsConstructor;
-import oracle.ucp.proxy.annotation.Post;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "public/presentations")
@@ -37,7 +34,7 @@ public class PresentationController {
     @GetMapping("{codeCIP13}")
     public ResponseEntity<PresentationCompleteDTO> show(@PathVariable Long codeCIP13) {
         try{
-            return new ResponseEntity<PresentationCompleteDTO>(presentationService.getPresentation(codeCIP13), HttpStatus.OK);
+            return new ResponseEntity<>(presentationService.getPresentation(codeCIP13), HttpStatus.OK);
         }catch(NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

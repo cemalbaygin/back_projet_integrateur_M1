@@ -15,15 +15,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = GroMedApplication.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK, properties = "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect")
 @RequiredArgsConstructor
-public class CommandeRepositoryTest {
+class CommandeRepositoryTest {
 
 
-   //private final TestEntityManager entityManager;
     @Autowired
     private PresentationsRepository presentationsRepository;
 
     @Test
-    public void  findAllIsEmpty(){
+    void  findAllIsEmpty(){
         List<Presentation> presentations = presentationsRepository.findAll();
         Assertions.assertEquals(0, presentations.size());
         assertThat(presentations).isNotNull();
