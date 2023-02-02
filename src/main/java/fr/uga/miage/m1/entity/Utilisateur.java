@@ -38,6 +38,7 @@ public class Utilisateur implements UserDetails {
     private List<Commande> commandes;
 
     @OneToMany(mappedBy = "utilisateur")
+    @OrderBy("id DESC")
     private List<CommandeType> commandeTypes;
 
     @ManyToOne
