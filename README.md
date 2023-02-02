@@ -1,14 +1,14 @@
 
 ## Sommaire
 
- - [Database schema](#database-schema)
- - [Project installation](#project-installation)
+ - [Schéma de base de données](#schéma-de-base-de-données)
+ - [Installation du projet](#installation-du-projet)
  - [Diagramme UML du projet](#diagramme-uml-du-projet)
  - [Rapport du projet](#rapport-du-projet)
 
-## Database schema
+## Schéma de base de données
 
-This project is compliant with the simple schema of database below:
+Ce projet est conforme au schéma simple de base de données ci-dessous :
 
 ```
 USE <YOUR_SCHEMA>;
@@ -28,11 +28,11 @@ INSERT INTO PERSON VALUES ('<YOUR_FIRST_NAME>', '<YOUR_LAST_NAME>');
 SELECT * FROM PERSON;
 ```
 
-You must fill the name of your schema and define the first row with your first and last names
+Vous devez renseigner le nom de votre schéma et définir la première ligne avec vos nom et prénom
 
-## Project installation
+## Installation du projet
 
-Change the configuration in src/main/resources/application.properties:
+Changez la configuration dans src/main/resources/application.properties:
 
 ```
 spring.datasource.url=jdbc:oracle:thin:@im2ag-oracle.univ-grenoble-alpes.fr:1521:IM2AG
@@ -45,23 +45,23 @@ spring.profiles.active=dev
 
 ```
 
-To get your personal token:
+Pour récupérer votre token personnel:
 
 https://im2ag-wiki.univ-grenoble-alpes.fr/doku.php?id=environnements:oracle
 
- Compile the server :
+Pour compiler le server :
  
 ```
 \>mvn clean install
 ```
 
- Launch the server :
+Pour lancer le server :
  
 ```
 \>mvn spring-boot:run
 ```
 
-To test the installation, go to this URL :
+Pour tester l'installation, aller sur l'URL :
 
 *http://<URL_DE_LA_VM>:8080/hello*
 
