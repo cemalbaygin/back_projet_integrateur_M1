@@ -3,7 +3,6 @@
 
  - [Schéma de base de données](#schéma-de-base-de-données)
  - [Installation du projet](#installation-du-projet)
- - [Diagramme UML du projet](#diagramme-uml-du-projet)
  - [Rapport du projet](#rapport-du-projet)
  - [Tous nos documents de conception sur Notion](#tous-nos-documents-de-conception-sur-notion)
 
@@ -65,11 +64,6 @@ Pour lancer le server :
 Pour tester l'installation, aller sur l'URL :
 
 *http://<URL_DE_LA_VM>:8080/hello*
-
-## Diagramme UML du projet
-
-![Diagramme UML ](https://user-images.githubusercontent.com/121033914/216774904-dfe6d596-06c3-4414-86ab-9c32fbbb106f.jpg)
-
 
 ## Rapport du projet
 [Rapport du projet](https://github.com/cemalbaygin/back_projet_integrateur_M1/files/10608936/Projet_BDI.pdf)
