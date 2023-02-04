@@ -68,7 +68,8 @@ Pour tester l'installation, aller sur l'URL :
 
 ## Diagramme UML du projet
 
-![Diagramme UML ]
+![Diagramme UML ](https://user-images.githubusercontent.com/121033914/216774904-dfe6d596-06c3-4414-86ab-9c32fbbb106f.jpg)
+
 
 ## Rapport du projet
 [Rapport du projet](https://github.com/cemalbaygin/back_projet_integrateur_M1/files/10608936/Projet_BDI.pdf)
